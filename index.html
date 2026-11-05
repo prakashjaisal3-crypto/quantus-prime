@@ -1537,11 +1537,38 @@
                 const depositFeeDetails = computed(() => computeFees(depositForm.amount));
                 const withdrawFeeDetails = computed(() => computeFees(withdrawForm.amount));
 
-                onMounted(() => {
-                    if (window.location.hash === '#admin') {
-                        openAdminAuthModal();
+                onMounted(async () => {
+    if (window.location.hash === '#admin') {
+        openAdminAuthModal();
+    }
+
+    // --- FETCH DATA FROM SUPABASE ---
+    if (supabaseConfig.url && supabaseConfig.anonKey) {
+        try {
+            const supabaseClient = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
+            
+            // Fetch Users
+            const { data: dbUsers, error: userError } = await supabaseClient.from('users').select('*');
+            if (!userError && dbUsers && dbUsers.length > 0) {
+                dbUsers.forEach(dbUser => {
+                    const exists = users.value.find(u => u.id === dbUser.id);
+                    if (!exists) {
+                        users.value.push(dbUser);
                     }
                 });
+            }
+
+            // Fetch Deposits
+            const { data: dbDeposits, error: depError } = await supabaseClient.from('deposits').select('*');
+            if (!depError && dbDeposits) {
+                deposits.value = dbDeposits;
+            }
+        } catch (err) {
+            console.error("Supabase Fetch Error:", err);
+        }
+    }
+});
+        
 
                 const triggerToast = (msg, type = 'success') => {
                     toast.message = msg;
@@ -1674,34 +1701,47 @@
                     triggerToast('Solana Deposit Request submitted for Admin Verification!');
                 };
 
-                const handleSignupSubmit = () => {
-                    if (signupForm.proofs.length < 2) {
-                        triggerToast('Please upload at least 2 proof photos', 'error');
-                        return;
-                    }
-                    if (!signupForm.is18OrAbove) {
-                        triggerToast('You must confirm that you are 18 years of age or older', 'error');
-                        return;
-                    }
-                    const newId = 'USR-' + Math.floor(100000 + Math.random() * 900000);
-                    const newUser = {
-                        id: newId,
-                        name: signupForm.name,
-                        email: signupForm.email,
-                        phone: signupForm.phone,
-                        password: signupForm.password || 'user123',
-                        status: 'pending',
-                        isVip: false,
-                        vipRequestStatus: 'none',
-                        dollars: 0,
-                        proofs: [...signupForm.proofs],
-                        activeAi: null
-                    };
-                    users.value.push(newUser);
-                    selectedUserId.value = newId;
-                    authScreenOpen.value = false;
-                    triggerToast('Application Submitted for Compliance Verification!', 'success');
-                };
+                const handleSignupSubmit = async () => {
+                 if (signupForm.proofs.length < 2) {
+                    triggerToast('Please upload at least 2 proof photos', 'error');
+                   return;
+                   }
+                 if (!signupForm.is18OrAbove) {
+                   triggerToast('You must confirm that you are 18 years of age or older', 'error');
+                   return;
+                   }
+     const newId = 'USR-' + Math.floor(100000 + Math.random() * 900000);
+    const newUser = {
+        id: newId,
+        name: signupForm.name,
+        email: signupForm.email,
+        phone: signupForm.phone,
+        password: signupForm.password || 'user123',
+        status: 'pending',
+        is_vip: false,
+        vip_request_status: 'none',
+        dollars: 0,
+        proofs: [...signupForm.proofs],
+        active_ai: null
+    };
+
+    // --- SUPABASE DIRECT INSERT ---
+    if (supabaseConfig.url && supabaseConfig.anonKey) {
+        const supabaseClient = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
+        const { error } = await supabaseClient.from('users').insert([newUser]);
+        if (error) {
+            console.error("Supabase Error:", error);
+            triggerToast("Database Error: " + error.message, 'error');
+            return;
+        }
+    }
+
+    users.value.push(newUser);
+    selectedUserId.value = newId;
+    authScreenOpen.value = false;
+    triggerToast('Application Submitted for Compliance Verification!', 'success');
+};
+        
 
                 const approveUser = (id) => {
                     const u = users.value.find(user => user.id === id);
