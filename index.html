@@ -1,44 +1,34 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantus Prime | Institutional Asset Management & Quantitative Trading Desk</title>
-
+    <title>Quantus Prime | Institutional Quantitative Assets</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        obsidian: {
-                            950: '#030712',
-                            900: '#090D16',
-                            850: '#0F172A',
-                            800: '#11192E',
-                            700: '#1E293B'
-                        },
-                        cyan: {
-                            400: '#38BDF8',
-                            500: '#00F0FF',
-                            600: '#0284C7'
-                        },
-                        emerald: {
-                            400: '#34D399',
-                            500: '#10B981',
-                            600: '#059669'
-                        },
-                        gold: {
-                            400: '#FBBF24',
-                            500: '#F59E0B',
-                            600: '#D97706'
-                        }
+                        obsidian: '#030712',
+                        cardBg: '#0B1120',
+                        cardBorder: '#1E293B',
+                        cyberCyan: '#00F0FF',
+                        goldAccent: '#F59E0B',
+                        emeraldYield: '#10B981'
                     },
                     fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace']
                     }
                 }
@@ -46,2452 +36,272 @@
         }
     </script>
 
-    <!-- FontAwesome 6.4.0 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Supabase JS Client SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- Vue 3 Global Build -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #030712;
             color: #F8FAFC;
-            background-image: 
-                radial-gradient(circle at 10% 10%, rgba(0, 240, 255, 0.06) 0%, transparent 40%),
-                radial-gradient(circle at 90% 85%, rgba(16, 185, 129, 0.05) 0%, transparent 45%),
-                radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.03) 0%, transparent 60%);
-            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
-
-        .font-mono-num {
-            font-family: 'JetBrains Mono', monospace;
+        .glass-card {
+            background: rgba(11, 17, 32, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 41, 59, 0.8);
         }
-
-        .font-cinzel-title {
-            font-family: 'Cinzel', serif;
-        }
-
-        .glass-panel {
-            background: rgba(9, 13, 22, 0.85);
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.6);
-        }
-        
-        .glass-panel-cyan {
-            background: linear-gradient(135deg, rgba(0, 240, 255, 0.08) 0%, rgba(9, 13, 22, 0.95) 100%);
-            backdrop-filter: blur(28px);
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            box-shadow: 0 0 45px rgba(0, 240, 255, 0.08);
-        }
-
-        .glass-panel-gold {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(9, 13, 22, 0.95) 100%);
-            backdrop-filter: blur(28px);
-            border: 1px solid rgba(245, 158, 11, 0.35);
-            box-shadow: 0 0 45px rgba(245, 158, 11, 0.08);
-        }
-
-        .glass-panel-emerald {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(9, 13, 22, 0.95) 100%);
-            backdrop-filter: blur(28px);
-            border: 1px solid rgba(16, 185, 129, 0.35);
-            box-shadow: 0 0 45px rgba(16, 185, 129, 0.08);
-        }
-
-        .glass-input {
-            background: rgba(3, 7, 18, 0.92);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            color: #F8FAFC;
-            transition: all 0.25s ease;
-        }
-        .glass-input:focus {
-            border-color: #00F0FF;
-            outline: none;
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
-        }
-
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #030712;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1E293B;
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #00F0FF;
-        }
-
         .cyan-glow {
-            text-shadow: 0 0 16px rgba(0, 240, 255, 0.65);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
         }
         .gold-glow {
-            text-shadow: 0 0 16px rgba(245, 158, 11, 0.65);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
         }
-
-        @keyframes floatPulse {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-4px); }
+        .drawer-slide-enter-active, .drawer-slide-leave-active {
+            transition: transform 0.3s ease, opacity 0.3s ease;
         }
-        .pulse-float {
-            animation: floatPulse 4s ease-in-out infinite;
-        }
-
-        .quantus-shimmer {
-            background: linear-gradient(90deg, #00F0FF 0%, #10B981 50%, #FBBF24 100%);
-            background-size: 200% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            animation: shine 6s linear infinite;
-        }
-        @keyframes shine {
-            to { background-position: 200% center; }
+        .drawer-slide-enter-from, .drawer-slide-leave-to {
+            transform: translateX(-100%);
+            opacity: 0;
         }
     </style>
 </head>
-<body class="antialiased min-h-screen selection:bg-cyan-500 selection:text-obsidian-950 flex flex-col">
+<body class="min-h-screen flex flex-col justify-between">
 
-    <div id="app" class="min-h-screen flex flex-col relative">
+<div id="app" class="flex-1 flex flex-col min-h-screen">
 
-        <!-- GLOBAL TOAST NOTIFICATION -->
-        <div v-if="toast.show" 
-             class="fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl transition-all duration-300 backdrop-blur-xl"
-             :class="{
-                 'bg-emerald-950/90 text-emerald-300 border border-emerald-500/40': toast.type === 'success',
-                 'bg-rose-950/90 text-rose-300 border border-rose-500/40': toast.type === 'error',
-                 'bg-cyan-950/90 text-cyan-300 border border-cyan-500/40': toast.type === 'info'
-             }">
-            <i class="fas text-base" :class="{
-                'fa-circle-check text-emerald-400': toast.type === 'success',
-                'fa-triangle-exclamation text-rose-400': toast.type === 'error',
-                'fa-bell text-cyan-400': toast.type === 'info'
-            }"></i>
-            <span class="text-xs font-semibold tracking-wide">{{ toast.message }}</span>
-            <button @click="toast.show = false" class="ml-2 text-slate-400 hover:text-white">
-                <i class="fas fa-times text-xs"></i>
+    <!-- TOP MARKET TICKER STRIP -->
+    <div class="bg-slate-950 border-b border-slate-800 text-xs py-1.5 px-4 font-mono text-slate-400 flex items-center justify-between overflow-x-auto whitespace-nowrap">
+        <div class="flex items-center space-x-6">
+            <span class="flex items-center"><i class="fa-solid fa-chart-line text-cyberCyan mr-1.5"></i> QUANTUS AI INDEX: <span class="text-emeraldYield font-bold ml-1">+2.48% 24H</span></span>
+            <span class="flex items-center"><i class="fa-brands fa-ethereum text-indigo-400 mr-1.5"></i> SOL/USDT: <span class="text-white font-bold ml-1">$194.20</span></span>
+            <span class="flex items-center"><i class="fa-solid fa-coins text-goldAccent mr-1.5"></i> 1 USDT = 1 $QD</span>
+            <span class="flex items-center"><i class="fa-solid fa-shield-halved text-cyberCyan mr-1.5"></i> Deposit/Withdraw Fee: <span class="text-white ml-1">6% (Min Base $100)</span></span>
+        </div>
+        <div class="hidden md:flex items-center space-x-3 text-slate-500">
+            <span>ISO 27001 Certified</span>
+            <span>•</span>
+            <span>Singapore (2018)</span>
+        </div>
+    </div>
+
+    <!-- MAIN HEADER BAR -->
+    <header class="glass-card sticky top-0 z-40 border-b border-slate-800/80 px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <!-- Triple Line Drawer Toggle Button -->
+            <button v-if="currentUser" @click="isDrawerOpen = !isDrawerOpen" class="text-slate-300 hover:text-cyberCyan focus:outline-none p-1.5 rounded-lg bg-slate-900 border border-slate-700">
+                <i class="fa-solid fa-bars text-lg"></i>
             </button>
-        </div>
 
-        <!-- 1. MARKET DATA TICKER STRIP -->
-        <div class="bg-obsidian-950 border-b border-slate-800/80 px-4 py-1.5 text-[11px] font-mono-num flex items-center justify-between text-slate-400 overflow-x-auto whitespace-nowrap z-40">
-            <div class="flex items-center gap-6">
-                <span class="flex items-center gap-1.5 text-emerald-400">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                    <strong class="text-white font-sans">QUANTUS DESK LIVE</strong>
-                </span>
-                <span>SOL/USDT: <strong class="text-white">$184.50</strong> <span class="text-emerald-400">+4.2%</span></span>
-                <span>USDT/QD: <strong class="text-white">1.0000</strong> <span class="text-cyan-400">1 USDT = 1 QD</span></span>
-                <span>FEE BASE: <strong class="text-gold-400">6% (3% GST + 2% Service + 1% TDS)</strong></span>
-            </div>
-            <div class="flex items-center gap-4 text-[10px] font-sans">
-                <!-- Supabase Connection Indicator -->
-                <button @click="openSupabaseModal" class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[10px] font-bold transition"
-                        :class="supabaseConfig.connected ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-gold-500/10 text-gold-400 border-gold-500/30'">
-                    <i class="fas fa-database"></i>
-                    <span>{{ supabaseConfig.connected ? 'Supabase Connected' : 'Supabase Offline (Demo Mode)' }}</span>
-                </button>
-                <span class="text-slate-500">HQ: Singapore (Est. 2018) | India: Oct 1, 2026</span>
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-2 cursor-pointer" @click="activeTab = currentUser ? 'dashboard' : 'auth'">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-cyberCyan via-blue-600 to-indigo-900 flex items-center justify-center font-bold text-slate-950 text-xl shadow-lg shadow-cyberCyan/20">
+                    Q
+                </div>
+                <div>
+                    <h1 class="font-bold tracking-wider text-base md:text-lg text-white font-mono leading-none">QUANTUS<span class="text-cyberCyan">PRIME</span></h1>
+                    <p class="text-[10px] text-slate-400 tracking-widest font-mono">QUANTITATIVE ASSET MANAGEMENT</p>
+                </div>
             </div>
         </div>
 
-        <!-- 2. BRAND HEADER BAR -->
-        <header class="bg-obsidian-900/90 border-b border-slate-800/80 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <!-- Hamburger Menu Button -->
-                <button v-if="currentRole === 'user' && currentUser && currentUser.status === 'approved' && !authScreenOpen" 
-                        @click="drawerOpen = true" 
-                        class="p-2.5 bg-obsidian-950 hover:bg-slate-800 border border-slate-700/80 text-cyan-400 rounded-xl transition flex items-center justify-center shadow-md active:scale-95"
-                        title="Open Menu">
-                    <i class="fas fa-bars text-lg"></i>
+        <!-- Header User Balance / Admin Controls -->
+        <div class="flex items-center space-x-4">
+            <div v-if="currentUser && !isAdminMode" class="bg-slate-900/90 border border-cyberCyan/30 rounded-xl px-3 py-1.5 flex items-center space-x-3">
+                <div class="text-right">
+                    <p class="text-[10px] text-slate-400 uppercase font-mono">Available Balance</p>
+                    <p class="font-mono text-sm md:text-base font-bold text-cyberCyan">${{ currentUser.balanceQD.toLocaleString() }} <span class="text-xs text-slate-300">$QD</span></p>
+                </div>
+                <button @click="activeTab = 'deposit'" class="bg-cyberCyan text-slate-950 font-semibold px-2.5 py-1 rounded-lg text-xs hover:bg-cyan-300 transition">
+                    + Deposit
                 </button>
-
-                <!-- Brand Logo -->
-                <div class="flex items-center gap-3 cursor-pointer" @click="navigateToTab('dashboard')">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-emerald-500 to-gold-400 flex items-center justify-center text-lg shadow-lg shadow-cyan-500/20 text-obsidian-950 font-black pulse-float">
-                        <i class="fas fa-gem"></i>
-                    </div>
-                    <div>
-                        <span class="text-lg font-black tracking-wider font-cinzel-title quantus-shimmer uppercase">Quantus Prime</span>
-                        <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Quantus Group Subsidiary</span>
-                    </div>
-                </div>
             </div>
 
-            <!-- Right Controls -->
-            <div class="flex items-center gap-4">
-                <div v-if="currentRole === 'user' && currentUser && currentUser.status === 'approved'" 
-                     class="flex items-center gap-3 glass-panel-cyan px-4 py-1.5 rounded-full shadow-lg cursor-pointer"
-                     @click="navigateToTab('wallet')">
-                    <div class="w-6 h-6 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center text-obsidian-950 text-xs font-black">
-                        $
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-[9px] uppercase font-black tracking-widest text-cyan-400 leading-none">Quantus Balance</span>
-                        <span class="text-sm font-black text-white font-mono-num leading-tight cyan-glow">
-                            ${{ currentUser.dollars.toLocaleString() }} <span class="text-[10px] text-cyan-400 font-sans">QD</span>
-                        </span>
-                    </div>
-                </div>
-
-                <div v-if="currentRole === 'user'">
-                    <button v-if="!currentUser || authScreenOpen" @click="authScreenOpen = false; authTab = 'login'" 
-                            class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-xl shadow-lg transition transform active:scale-95">
-                        <i class="fas fa-right-to-bracket mr-1"></i> Sign In
-                    </button>
-                    <div v-else class="flex items-center gap-3">
-                        <div class="hidden sm:flex flex-col text-right">
-                            <span class="text-xs font-bold text-white flex items-center gap-1 justify-end">
-                                {{ currentUser.name }}
-                                <span v-if="currentUser.isVip" class="text-[9px] bg-gold-500/20 text-gold-300 border border-gold-500/40 px-1.5 py-0.2 rounded font-black uppercase">VIP</span>
-                            </span>
-                            <span class="text-[9px] text-emerald-400 font-mono-num">ID: {{ currentUser.id.toUpperCase() }}</span>
-                        </div>
-                        <button @click="selectedUserId = 'guest'" class="p-2 text-slate-400 hover:text-rose-400 transition" title="Sign Out">
-                            <i class="fas fa-power-off text-base"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div v-if="currentRole === 'admin'" class="flex items-center gap-3">
-                    <span class="px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-full text-xs font-black uppercase">
-                        Admin Master Console
-                    </span>
-                    <button @click="switchToUserMode" class="px-3 py-1.5 bg-slate-800 text-slate-300 hover:text-white text-xs font-bold rounded-xl">
-                        Exit Admin Console
-                    </button>
-                </div>
+            <!-- Profile / Logout -->
+            <div v-if="currentUser" class="flex items-center space-x-2">
+                <span v-if="currentUser.isVip" class="bg-goldAccent/20 text-goldAccent text-[10px] border border-goldAccent/40 font-bold px-2 py-0.5 rounded-full font-mono">VIP MEMBER</span>
+                <button @click="logout" class="text-slate-400 hover:text-red-400 p-2 rounded-lg text-sm" title="Sign Out">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- 3. SLIDE-OUT DRAWER NAVIGATION OVERLAY -->
-        <div v-if="drawerOpen" class="fixed inset-0 z-50 flex" @click="drawerOpen = false">
-            <div class="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <!-- TRIPLE LINE SLIDE-OUT DRAWER NAVIGATION -->
+    <transition name="drawer-slide">
+        <div v-if="isDrawerOpen" class="fixed inset-0 z-50 flex">
+            <!-- Overlay -->
+            <div @click="isDrawerOpen = false" class="fixed inset-0 bg-black/70 backdrop-blur-sm"></div>
 
-            <div class="relative w-80 max-w-[85vw] bg-obsidian-950 border-r border-slate-800 h-full p-6 flex flex-col justify-between shadow-2xl z-10" @click.stop>
-                <div class="space-y-6">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-500 flex items-center justify-center text-obsidian-950 font-black text-sm">
-                                <i class="fas fa-gem"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-black text-sm text-white font-cinzel-title uppercase">Quantus Desk</h3>
-                                <span class="text-[9px] text-cyan-400 font-bold block uppercase tracking-widest">Navigation Center</span>
-                            </div>
+            <!-- Drawer Content -->
+            <div class="relative w-72 max-w-[80vw] bg-slate-950 border-r border-slate-800 h-full flex flex-col justify-between z-10 p-5 shadow-2xl">
+                <div>
+                    <!-- Drawer Header -->
+                    <div class="flex items-center justify-between pb-6 border-b border-slate-800 mb-6">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-lg bg-cyberCyan flex items-center justify-center font-bold text-slate-950 font-mono">Q</div>
+                            <span class="font-bold font-mono text-white tracking-wide">NAVIGATION</span>
                         </div>
-                        <button @click="drawerOpen = false" class="p-2 text-slate-400 hover:text-white transition">
-                            <i class="fas fa-times text-base"></i>
+                        <button @click="isDrawerOpen = false" class="text-slate-400 hover:text-white p-1">
+                            <i class="fa-solid fa-xmark text-xl"></i>
                         </button>
                     </div>
 
-                    <div v-if="currentUser" class="p-3.5 rounded-2xl bg-obsidian-900/90 border border-slate-800 space-y-1">
-                        <div class="text-xs font-bold text-white flex items-center justify-between">
-                            <span>{{ currentUser.name }}</span>
-                            <span v-if="currentUser.isVip" class="text-[9px] bg-gold-500/20 text-gold-400 border border-gold-500/40 px-1.5 py-0.5 rounded font-black">VIP MEMBER</span>
-                        </div>
-                        <div class="text-[10px] text-slate-400 font-mono-num">{{ currentUser.email }}</div>
-                        <div class="text-[10px] text-emerald-400 font-black font-mono-num pt-1">
-                            Balance: ${{ currentUser.dollars.toLocaleString() }} QD
-                        </div>
-                    </div>
-
-                    <nav class="space-y-2">
-                        <button @click="navigateToTab('dashboard')" 
-                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
-                                :class="currentUserTab === 'dashboard' ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
-                            <span class="flex items-center gap-3"><i class="fas fa-chart-pie text-sm text-cyan-400"></i>Portfolio Overview</span>
-                            <i class="fas fa-chevron-right text-[10px] text-slate-500"></i>
+                    <!-- Navigation Links -->
+                    <nav class="space-y-2 font-mono text-sm">
+                        <button @click="navigateTo('dashboard')" :class="activeTab === 'dashboard' ? 'bg-cyberCyan/15 text-cyberCyan border-l-4 border-cyberCyan' : 'text-slate-300 hover:bg-slate-900'" class="w-full text-left px-4 py-3 rounded-r-xl transition flex items-center space-x-3">
+                            <i class="fa-solid fa-chart-pie w-5"></i>
+                            <span>Portfolio Overview</span>
                         </button>
 
-                        <button @click="navigateToTab('deposit')" 
-                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
-                                :class="currentUserTab === 'deposit' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
-                            <span class="flex items-center gap-3"><i class="fas fa-qrcode text-sm text-emerald-400"></i>Solana USDT Deposit</span>
-                            <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded-md font-extrabold">SPL</span>
+                        <button @click="navigateTo('deposit')" :class="activeTab === 'deposit' ? 'bg-cyberCyan/15 text-cyberCyan border-l-4 border-cyberCyan' : 'text-slate-300 hover:bg-slate-900'" class="w-full text-left px-4 py-3 rounded-r-xl transition flex items-center space-x-3">
+                            <i class="fa-solid fa-wallet w-5"></i>
+                            <span>Solana USDT Deposit</span>
                         </button>
 
-                        <button @click="navigateToTab('wallet')" 
-                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
-                                :class="currentUserTab === 'wallet' ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
-                            <span class="flex items-center gap-3"><i class="fas fa-wallet text-sm text-cyan-400"></i>Quantus Dollars ($QD)</span>
-                            <span class="text-[10px] text-cyan-300 font-mono-num font-extrabold">${{ currentUser ? currentUser.dollars : 0 }}</span>
+                        <button @click="navigateTo('ai-engines')" :class="activeTab === 'ai-engines' ? 'bg-cyberCyan/15 text-cyberCyan border-l-4 border-cyberCyan' : 'text-slate-300 hover:bg-slate-900'" class="w-full text-left px-4 py-3 rounded-r-xl transition flex items-center space-x-3">
+                            <i class="fa-solid fa-robot w-5"></i>
+                            <span>Quantus AI Engines</span>
                         </button>
 
-                        <button @click="navigateToTab('ai')" 
-                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
-                                :class="currentUserTab === 'ai' ? 'bg-gold-500/15 text-gold-400 border border-gold-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
-                            <span class="flex items-center gap-3"><i class="fas fa-microchip text-sm text-gold-400"></i>Quantus AI Engines</span>
-                            <span v-if="currentUser && currentUser.activeAi" class="text-[9px] bg-gold-500/20 text-gold-300 px-1.5 py-0.5 rounded-md font-black uppercase">
-                                {{ currentUser.activeAi }}
-                            </span>
+                        <button @click="navigateTo('charts')" :class="activeTab === 'charts' ? 'bg-cyberCyan/15 text-cyberCyan border-l-4 border-cyberCyan' : 'text-slate-300 hover:bg-slate-900'" class="w-full text-left px-4 py-3 rounded-r-xl transition flex items-center space-x-3">
+                            <i class="fa-solid fa-chart-candlestick w-5"></i>
+                            <span>TradingView Desk</span>
                         </button>
 
-                        <button @click="navigateToTab('bank')" 
-                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
-                                :class="currentUserTab === 'bank' ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
-                            <span class="flex items-center gap-3"><i class="fas fa-building-columns text-sm text-cyan-400"></i>Bank & Withdrawals</span>
-                            <i class="fas fa-chevron-right text-[10px] text-slate-500"></i>
+                        <button @click="navigateTo('withdraw')" :class="activeTab === 'withdraw' ? 'bg-cyberCyan/15 text-cyberCyan border-l-4 border-cyberCyan' : 'text-slate-300 hover:bg-slate-900'" class="w-full text-left px-4 py-3 rounded-r-xl transition flex items-center space-x-3">
+                            <i class="fa-solid fa-building-columns w-5"></i>
+                            <span>Bank & Withdrawals</span>
                         </button>
 
-                        <!-- NEW: TRADINGVIEW CHARTS MENU ITEM -->
-                        <button @click="navigateToTab('charts')" 
-                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
-                                :class="currentUserTab === 'charts' ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
-                            <span class="flex items-center gap-3"><i class="fas fa-chart-line text-sm text-cyan-400"></i>TradingView Live Charts</span>
-                            <span class="text-[9px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded-md font-bold uppercase">LIVE</span>
+                        <button @click="navigateTo('live-desk')" :class="activeTab === 'live-desk' ? 'bg-cyberCyan/15 text-cyberCyan border-l-4 border-cyberCyan' : 'text-slate-300 hover:bg-slate-900'" class="w-full text-left px-4 py-3 rounded-r-xl transition flex items-center space-x-3">
+                            <i class="fa-solid fa-headset w-5"></i>
+                            <span>Institutional Live Desk</span>
                         </button>
 
-                        <button @click="navigateToTab('chat')" 
-                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
-                                :class="currentUserTab === 'chat' ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
-                            <span class="flex items-center gap-3"><i class="fas fa-headset text-sm text-emerald-400"></i>Institutional Live Desk</span>
-                        </button>
-
-                        <button @click="navigateToTab('about')" 
-                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
-                                :class="currentUserTab === 'about' ? 'bg-gold-500/15 text-gold-400 border border-gold-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
-                            <span class="flex items-center gap-3"><i class="fas fa-globe text-sm text-gold-400"></i>About Quantus Group</span>
-                            <span class="text-[9px] bg-gold-500/20 text-gold-300 px-1.5 py-0.5 rounded-md font-bold uppercase">Corporate</span>
+                        <button @click="navigateTo('about')" :class="activeTab === 'about' ? 'bg-cyberCyan/15 text-cyberCyan border-l-4 border-cyberCyan' : 'text-slate-300 hover:bg-slate-900'" class="w-full text-left px-4 py-3 rounded-r-xl transition flex items-center space-x-3">
+                            <i class="fa-solid fa-shield-cat w-5"></i>
+                            <span>About Quantus Group</span>
                         </button>
                     </nav>
                 </div>
 
-                <div class="border-t border-slate-800/80 pt-4 space-y-2">
-                    <div class="text-[10px] text-slate-500 font-mono-num text-center">
-                        Quantus Prime Desk v5.2 • ISO 27001 Certified
-                    </div>
+                <!-- Drawer Footer -->
+                <div class="pt-6 border-t border-slate-800 text-xs text-slate-500 font-mono">
+                    <p>Quantus Group Entity #SG-2018-99</p>
+                    <p class="mt-1">Launched India: Oct 1, 2026</p>
                 </div>
             </div>
         </div>
+    </transition>
 
-        <!-- ADMIN STRIP -->
-        <nav v-if="currentRole === 'admin'" class="bg-obsidian-950 border-b border-rose-500/30 px-4 sm:px-8 py-2 sticky top-[65px] z-20 backdrop-blur-md">
-            <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
-                <button @click="currentAdminTab = 'approvals'" class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
-                        :class="currentAdminTab === 'approvals' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'text-slate-400 hover:bg-slate-900'">
-                    <i class="fas fa-user-check"></i>Verification Requests ({{ pendingUsers.length }})
-                </button>
-                <button @click="currentAdminTab = 'deposits'" class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
-                        :class="currentAdminTab === 'deposits' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'text-slate-400 hover:bg-slate-900'">
-                    <i class="fas fa-file-invoice-dollar"></i>Deposit Approvals Desk ({{ pendingDeposits.length }})
-                </button>
-                <button @click="currentAdminTab = 'yield_coins'" class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
-                        :class="currentAdminTab === 'yield_coins' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'text-slate-400 hover:bg-slate-900'">
-                    <i class="fas fa-sliders"></i>Treasury & Trade Execution Desk
-                </button>
-                <button @click="currentAdminTab = 'vip_requests'" class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
-                        :class="currentAdminTab === 'vip_requests' ? 'bg-gold-500/20 text-gold-300 border border-gold-500/40' : 'text-slate-400 hover:bg-slate-900'">
-                    <i class="fas fa-crown"></i>VIP AI Approvals ({{ pendingVipRequests.length }})
-                </button>
-                <button @click="currentAdminTab = 'withdrawals'" class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
-                        :class="currentAdminTab === 'withdrawals' ? 'bg-gold-500/20 text-gold-300 border border-gold-500/40' : 'text-slate-400 hover:bg-slate-900'">
-                    <i class="fas fa-money-bill-transfer"></i>Withdrawal Queue ({{ pendingWithdrawals.length }})
-                </button>
-                <button @click="currentAdminTab = 'chat'" class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
-                        :class="currentAdminTab === 'chat' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'text-slate-400 hover:bg-slate-900'">
-                    <i class="fas fa-comments"></i>Desk Inbox
-                </button>
-            </div>
-        </nav>
+    <!-- MAIN BODY CONTENT AREA -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8">
 
-        <!-- MAIN WORKSPACE -->
-        <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
-
-            <!-- AUTH SCREEN -->
-            <div v-if="currentRole === 'user' && (!currentUser || authScreenOpen)" class="max-w-md mx-auto my-6">
-                <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden border border-cyan-500/20">
-                    <div class="text-center mb-6">
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 via-emerald-500 to-gold-400 mx-auto flex items-center justify-center text-2xl text-obsidian-950 font-black mb-3 shadow-lg shadow-cyan-500/30">
-                            <i class="fas fa-gem"></i>
-                        </div>
-                        <h2 class="text-2xl font-black font-cinzel-title text-white uppercase tracking-tight quantus-shimmer">Quantus Prime</h2>
-                        <p class="text-xs text-slate-400 mt-1">Institutional Asset Management Portal</p>
-                    </div>
-
-                    <div class="mb-4 p-3 rounded-2xl bg-obsidian-950 border border-slate-800">
-                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Select Demo Investor Account:</label>
-                        <select v-model="selectedUserId" @change="onUserSelectChange" 
-                                class="w-full bg-obsidian-900 border border-slate-700/80 rounded-xl text-xs text-slate-200 px-3 py-2 focus:outline-none focus:border-cyan-500 cursor-pointer font-medium">
-                            <option value="guest">👤 Guest (New Investor / Register)</option>
-                            <option v-for="u in users" :key="u.id" :value="u.id">
-                                {{ u.name }} ({{ u.status.toUpperCase() }}) {{ u.isVip ? '👑 VIP' : '' }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="flex bg-obsidian-950 p-1 rounded-2xl border border-slate-800 mb-6">
-                        <button @click="authTab = 'login'" class="flex-1 py-2 rounded-xl text-xs font-bold transition"
-                                :class="authTab === 'login' ? 'bg-slate-800 text-cyan-400 shadow' : 'text-slate-400 hover:text-white'">
-                            Terminal Sign In
-                        </button>
-                        <button @click="authTab = 'signup'" class="flex-1 py-2 rounded-xl text-xs font-bold transition"
-                                :class="authTab === 'signup' ? 'bg-slate-800 text-cyan-400 shadow' : 'text-slate-400 hover:text-white'">
-                            Institutional Registration
-                        </button>
-                    </div>
-
-                    <!-- LOGIN -->
-                    <div v-if="authTab === 'login'" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1">Corporate Email Address</label>
-                            <input type="email" v-model="loginForm.email" placeholder="investor@quantusprime.com" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1">Account Password</label>
-                            <input type="password" v-model="loginForm.password" placeholder="••••••••" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs">
-                        </div>
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="text-xs font-bold text-slate-300">2FA OTP Code</label>
-                                <button @click="sendOtp('login')" type="button" class="text-xs text-cyan-400 hover:underline font-semibold">
-                                    {{ loginForm.otpSent ? 'Resend Code' : 'Send 2FA Code' }}
-                                </button>
-                            </div>
-                            <input type="text" v-model="loginForm.otp" placeholder="Enter 6-digit code" maxLength="6" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs font-mono-num">
-                            <p v-if="loginForm.otpHint" class="text-[11px] text-cyan-400 mt-1 font-mono-num"><i class="fas fa-circle-info"></i> {{ loginForm.otpHint }}</p>
-                        </div>
-                        <button @click="handleLogin" class="w-full mt-2 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-xl shadow-lg transition transform active:scale-95">
-                            Authenticate Account
-                        </button>
-                    </div>
-
-                    <!-- SIGNUP -->
-                    <div v-if="authTab === 'signup'" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1">Full Legal Name</label>
-                            <input type="text" v-model="signupForm.name" placeholder="Alexander Wright" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1">Corporate Email / Gmail</label>
-                            <input type="email" v-model="signupForm.email" placeholder="alexander@gmail.com" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">Phone</label>
-                                <input type="tel" v-model="signupForm.phone" placeholder="+1 415 555 0199" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">Password</label>
-                                <input type="password" v-model="signupForm.password" placeholder="••••••••" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs">
-                            </div>
-                        </div>
-
-                        <!-- PROOF UPLOADS (2-3) -->
-                        <div class="border-t border-slate-800 pt-3">
-                            <div class="flex justify-between items-center mb-1.5">
-                                <label class="text-xs font-black text-slate-200">Identity Proof (Min 2, Max 3) <span class="text-cyan-400">*</span></label>
-                                <span class="text-[11px] font-bold font-mono-num" :class="signupForm.proofs.length >= 2 ? 'text-emerald-400' : 'text-slate-400'">
-                                    {{ signupForm.proofs.length }}/3 Uploaded
-                                </span>
-                            </div>
-                            <div class="border-2 border-dashed border-slate-700 hover:border-cyan-500/60 bg-obsidian-950/60 rounded-2xl p-4 text-center cursor-pointer transition"
-                                 @click="$refs.fileInput.click()">
-                                <input type="file" ref="fileInput" multiple accept="image/*" class="hidden" @change="handleProofUpload">
-                                <i class="fas fa-cloud-arrow-up text-2xl text-cyan-400 mb-1"></i>
-                                <p class="text-xs font-medium text-slate-300">Select 2 to 3 Proof Photos</p>
-                            </div>
-                            <div v-if="signupForm.proofs.length > 0" class="grid grid-cols-3 gap-2 mt-3">
-                                <div v-for="(img, idx) in signupForm.proofs" :key="idx" class="relative group rounded-xl overflow-hidden aspect-square border border-slate-700">
-                                    <img :src="img" class="w-full h-full object-cover">
-                                    <button @click.stop="removeProof(idx)" class="absolute top-1 right-1 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px]">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- MANDATORY AGE CONFIRMATION CHECKBOX -->
-                        <div class="p-3 bg-obsidian-950 rounded-xl border border-slate-800 flex items-start gap-2.5">
-                            <input type="checkbox" id="ageCheck" v-model="signupForm.is18OrAbove" class="mt-0.5 rounded text-cyan-500 focus:ring-cyan-400 bg-obsidian-900 border-slate-700 cursor-pointer">
-                            <label for="ageCheck" class="text-xs text-slate-300 font-medium cursor-pointer leading-snug">
-                                I confirm that I am <strong class="text-cyan-400">18 years of age or older</strong> and agree to Quantus Group compliance terms.
-                            </label>
-                        </div>
-
-                        <button @click="handleSignupSubmit" class="w-full mt-2 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-xl shadow-lg transition transform active:scale-95">
-                            Submit Registration
-                        </button>
-                    </div>
+        <!-- 1. AUTHENTICATION DESK (LOGIN & SIGNUP - DIRECT VISITOR DEFAULT) -->
+        <div v-if="!currentUser && activeTab === 'auth'" class="max-w-xl mx-auto my-6 md:my-12">
+            <div class="glass-card rounded-2xl p-6 md:p-8 border border-slate-800 cyan-glow">
+                
+                <!-- Auth Toggle Tabs -->
+                <div class="flex border-b border-slate-800 mb-8 font-mono">
+                    <button @click="authMode = 'login'" :class="authMode === 'login' ? 'text-cyberCyan border-b-2 border-cyberCyan font-bold' : 'text-slate-400 hover:text-white'" class="flex-1 py-3 text-center transition">
+                        CLIENT LOGIN
+                    </button>
+                    <button @click="authMode = 'signup'" :class="authMode === 'signup' ? 'text-cyberCyan border-b-2 border-cyberCyan font-bold' : 'text-slate-400 hover:text-white'" class="flex-1 py-3 text-center transition">
+                        INSTITUTIONAL REGISTRATION
+                    </button>
                 </div>
-            </div>
 
-            <!-- PENDING SCREEN -->
-            <div v-if="currentRole === 'user' && currentUser && currentUser.status === 'pending' && !authScreenOpen" class="max-w-xl mx-auto my-8">
-                <div class="glass-panel-cyan rounded-3xl p-8 text-center shadow-2xl relative overflow-hidden">
-                    <div class="w-16 h-16 mx-auto mb-4 bg-cyan-500/20 border border-cyan-500/40 rounded-2xl flex items-center justify-center text-3xl text-cyan-400 pulse-float">
-                        ⏳
-                    </div>
-                    <span class="px-3 py-1 bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-black uppercase tracking-widest rounded-full inline-block mb-3">
-                        Compliance Review In Progress
-                    </span>
-                    <h2 class="text-2xl font-black text-white">Verification Pending Approval</h2>
-                    <p class="text-xs text-slate-300 mt-2 max-w-md mx-auto leading-relaxed">
-                        Welcome <strong class="text-cyan-400">{{ currentUser.name }}</strong>. Your submitted identity proof documents are currently under compliance review by Quantus Group Admin.
-                    </p>
-                </div>
-            </div>
-
-            <!-- APPROVED USER PORTAL -->
-            <div v-if="currentRole === 'user' && currentUser && currentUser.status === 'approved' && !authScreenOpen" class="space-y-6">
-
-                <!-- TAB 1: DASHBOARD -->
-                <div v-if="currentUserTab === 'dashboard'" class="space-y-6">
-                    <div class="glass-panel-cyan rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-cyan-500/30">
-                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
-                            <div class="space-y-2">
-                                <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase tracking-widest rounded-full inline-block">
-                                    <i class="fas fa-shield-check mr-1"></i> Verified Account Desk
-                                </span>
-                                <h1 class="text-2xl sm:text-3xl font-black text-white font-cinzel-title">
-                                    Welcome, <span class="quantus-shimmer">{{ currentUser.name }}</span>
-                                    <span v-if="currentUser.isVip" class="ml-2 text-xs bg-gold-500/20 text-gold-300 border border-gold-500/40 px-2 py-0.5 rounded-full font-black font-sans">VIP MEMBER</span>
-                                </h1>
-                                <p class="text-xs text-slate-300 max-w-xl leading-relaxed">
-                                    Quantus Prime Wealth Desk. 1 USDT = 1 $QD. Fee structure: 3% GST (IGST+CGST), 2% Service, 1% TDS (Total 6%, min $100 base rule).
-                                </p>
-                            </div>
-
-                            <div class="glass-panel p-5 rounded-2xl flex items-center gap-4 w-full md:w-auto border border-cyan-500/40">
-                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 via-emerald-500 to-gold-400 flex items-center justify-center text-2xl font-black text-obsidian-950 shadow-lg shadow-cyan-500/20 pulse-float">
-                                    $
-                                </div>
-                                <div>
-                                    <div class="text-[10px] uppercase font-black text-cyan-400 tracking-wider">Quantus Balance</div>
-                                    <div class="text-3xl font-black text-white font-mono-num leading-tight cyan-glow">
-                                        ${{ currentUser.dollars.toLocaleString() }} <span class="text-xs font-bold text-cyan-400 font-sans">QD</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <!-- LOGIN FORM -->
+                <div v-if="authMode === 'login'" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-mono text-slate-400 mb-1.5">CLIENT ACCOUNT EMAIL</label>
+                        <input v-model="loginForm.email" type="email" placeholder="investor@quantusprime.io" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyberCyan font-mono">
                     </div>
 
-                    <!-- Quick Stats -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-                        <div class="glass-panel p-5 rounded-2xl space-y-3 cursor-pointer hover:border-emerald-500/40 transition" @click="navigateToTab('deposit')">
-                            <div class="flex justify-between items-center text-emerald-400">
-                                <i class="fas fa-qrcode text-xl"></i>
-                                <span class="text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded-full font-bold">Solana SPL QR</span>
-                            </div>
-                            <div>
-                                <div class="text-xs text-slate-400 font-medium">Solana USDT Deposit Desk</div>
-                                <div class="text-base font-bold text-white mt-1">6% Total Fee (Min $100 base)</div>
-                            </div>
-                            <div class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
-                                <i class="fas fa-arrow-down-to-line"></i> QR Code & Proof Upload
-                            </div>
-                        </div>
-
-                        <div class="glass-panel p-5 rounded-2xl space-y-3 cursor-pointer hover:border-cyan-500/40 transition" @click="navigateToTab('wallet')">
-                            <div class="flex justify-between items-center text-cyan-400">
-                                <i class="fas fa-wallet text-xl"></i>
-                                <span class="text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded-full font-bold">1 USDT = 1 QD</span>
-                            </div>
-                            <div>
-                                <div class="text-xs text-slate-400 font-medium">Available Portfolio Balance</div>
-                                <div class="text-xl font-black text-white mt-1 font-mono-num">${{ currentUser.dollars.toLocaleString() }} QD</div>
-                            </div>
-                            <div class="text-[11px] text-slate-400">Real-Time Ledger</div>
-                        </div>
-
-                        <div class="glass-panel p-5 rounded-2xl space-y-3 cursor-pointer hover:border-gold-500/40 transition" @click="navigateToTab('ai')">
-                            <div class="flex justify-between items-center text-gold-400">
-                                <i class="fas fa-microchip text-xl"></i>
-                                <span class="text-[10px] bg-gold-500/10 px-2 py-0.5 rounded-full font-bold">Yield Models</span>
-                            </div>
-                            <div>
-                                <div class="text-xs text-slate-400 font-medium">Active AI Strategy</div>
-                                <div class="text-base font-bold text-white mt-1 uppercase">
-                                    {{ currentUser.activeAi ? currentUser.activeAi + ' ENGINE' : 'NO BOT ACTIVE' }}
-                                </div>
-                            </div>
-                            <div class="text-[11px] text-gold-400">
-                                Yield: {{ currentUser.activeAi === 'vip' ? '35-40% Monthly' : '25-30% Monthly' }}
-                            </div>
-                        </div>
-
-                        <div class="glass-panel p-5 rounded-2xl space-y-3 cursor-pointer hover:border-cyan-500/40 transition" @click="navigateToTab('charts')">
-                            <div class="flex justify-between items-center text-cyan-400">
-                                <i class="fas fa-chart-line text-xl"></i>
-                                <span class="text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded-full font-bold">TradingView</span>
-                            </div>
-                            <div>
-                                <div class="text-xs text-slate-400 font-medium">Market Charts Desk</div>
-                                <div class="text-base font-bold text-white mt-1">EUR/USD, Gold, Solana</div>
-                            </div>
-                            <div class="text-[11px] text-cyan-400 font-semibold flex items-center gap-1">
-                                <i class="fas fa-arrow-trend-up"></i> Live Interactive Charts
-                            </div>
-                        </div>
+                    <div>
+                        <label class="block text-xs font-mono text-slate-400 mb-1.5">PASSWORD</label>
+                        <input v-model="loginForm.password" type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyberCyan font-mono">
                     </div>
 
-                    <!-- Recent Activity Log with Trade Badges -->
-                    <div class="glass-panel p-6 rounded-3xl space-y-4">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-base font-bold text-white flex items-center gap-2">
-                                <i class="fas fa-clock-rotate-left text-cyan-400"></i>
-                                <span>Portfolio & Trade Execution Log</span>
-                            </h3>
-                            <button @click="navigateToTab('wallet')" class="text-xs text-cyan-400 hover:underline font-bold">
-                                View Full Log &rarr;
-                            </button>
-                        </div>
+                    <button @click="handleLogin" class="w-full bg-gradient-to-r from-cyberCyan to-blue-600 text-slate-950 font-bold py-3.5 rounded-xl hover:opacity-90 transition font-mono tracking-wider shadow-lg shadow-cyberCyan/20">
+                        ACCESS TRADING DESK
+                    </button>
 
-                        <div class="space-y-2">
-                            <div v-for="(tx, idx) in userTransactions.slice(0, 5)" :key="idx"
-                                 class="p-3.5 rounded-2xl bg-obsidian-950/80 border border-slate-800/80 flex items-center justify-between text-xs">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm"
-                                         :class="tx.amount >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'">
-                                        <i class="fas" :class="tx.amount >= 0 ? 'fa-arrow-down-left' : 'fa-arrow-up-right'"></i>
-                                    </div>
-                                    <div>
-                                        <div class="font-bold text-slate-200 flex items-center gap-2">
-                                            <span>{{ tx.reason }}</span>
-                                            <span v-if="tx.tradeAsset" class="px-2 py-0.5 rounded text-[9px] font-black uppercase font-mono-num"
-                                                  :class="tx.orderType === 'BUY' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'">
-                                                {{ tx.tradeAsset }} • {{ tx.orderType }}
-                                            </span>
-                                        </div>
-                                        <div class="text-[10px] text-slate-500 font-mono-num">{{ tx.date }}</div>
-                                    </div>
-                                </div>
-                                <div class="font-black text-sm font-mono-num" :class="tx.amount >= 0 ? 'text-emerald-400' : 'text-rose-400'">
-                                    {{ tx.amount >= 0 ? '+' : '' }}${{ Math.abs(tx.amount).toLocaleString() }} QD
-                                </div>
-                            </div>
-                        </div>
+                    <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-xs font-mono text-slate-400">
+                        <p class="font-bold text-slate-300 mb-1"><i class="fa-solid fa-info-circle text-cyberCyan mr-1"></i> Demo Credentials:</p>
+                        <p>User: <span class="text-white">investor@quantusprime.io</span> / <span class="text-white">user123</span></p>
+                        <p>Admin: <span class="text-white">admin@quantusprime.io</span> / <span class="text-white">admin123</span></p>
                     </div>
                 </div>
 
-                <!-- TAB 2: SOLANA USDT DEPOSIT DESK (QR CODE & DYNAMIC FEE BREAKDOWN) -->
-                <div v-if="currentUserTab === 'deposit'" class="space-y-6">
-                    <div class="glass-panel-emerald p-6 sm:p-8 rounded-3xl space-y-4">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
-                            <div>
-                                <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400">Solana Network Deposit Desk</span>
-                                <h2 class="text-2xl font-black text-white font-cinzel-title mt-1">Deposit USDT via Solana (SPL)</h2>
-                                <p class="text-xs text-slate-300 mt-1">
-                                    Transfer USDT on Solana SPL to the address below, attach screenshot proof, and receive credited $QD.
-                                </p>
-                            </div>
-                            <div class="px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-center">
-                                <span class="text-[10px] uppercase font-bold text-emerald-300">Conversion Rate</span>
-                                <div class="text-sm font-black text-white font-mono-num">1 USDT = 1.00 $QD</div>
-                            </div>
+                <!-- SIGN UP FORM (NO OTP REQUIRED) -->
+                <div v-else class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-mono text-slate-400 mb-1">FULL LEGAL NAME</label>
+                        <input v-model="signupForm.fullName" type="text" placeholder="John Doe" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-cyberCyan font-mono text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-mono text-slate-400 mb-1">EMAIL ADDRESS</label>
+                            <input v-model="signupForm.email" type="email" placeholder="john@domain.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-cyberCyan font-mono text-sm">
                         </div>
-
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
-                            
-                            <!-- QR CODE DISPLAY & ADDRESS CARD -->
-                            <div class="glass-panel p-6 rounded-2xl text-center space-y-4 flex flex-col justify-between">
-                                <div>
-                                    <span class="text-xs font-bold text-slate-300 block mb-3">Scan Official Solana SPL QR Code</span>
-                                    
-                                    <!-- Embedded High Quality Solana QR Code SVG -->
-                                    <div class="w-48 h-48 mx-auto bg-white p-3 rounded-2xl shadow-2xl flex flex-col items-center justify-center border-4 border-emerald-500/40 relative group">
-                                        <svg viewBox="0 0 200 200" class="w-full h-full">
-                                            <rect width="200" height="200" fill="#ffffff"/>
-                                            <!-- QR Finder Patterns -->
-                                            <rect x="10" y="10" width="50" height="50" fill="#030712"/>
-                                            <rect x="18" y="18" width="34" height="34" fill="#ffffff"/>
-                                            <rect x="26" y="26" width="18" height="18" fill="#10B981"/>
-                                            
-                                            <rect x="140" y="10" width="50" height="50" fill="#030712"/>
-                                            <rect x="148" y="18" width="34" height="34" fill="#ffffff"/>
-                                            <rect x="156" y="26" width="18" height="18" fill="#10B981"/>
-
-                                            <rect x="10" y="140" width="50" height="50" fill="#030712"/>
-                                            <rect x="18" y="148" width="34" height="34" fill="#ffffff"/>
-                                            <rect x="26" y="156" width="18" height="18" fill="#10B981"/>
-
-                                            <!-- Data Matrix Grid Blocks -->
-                                            <rect x="70" y="15" width="12" height="12" fill="#030712"/>
-                                            <rect x="90" y="15" width="12" height="12" fill="#030712"/>
-                                            <rect x="115" y="15" width="12" height="12" fill="#030712"/>
-                                            
-                                            <rect x="70" y="35" width="12" height="12" fill="#10B981"/>
-                                            <rect x="100" y="35" width="12" height="12" fill="#030712"/>
-                                            <rect x="120" y="35" width="12" height="12" fill="#030712"/>
-
-                                            <rect x="15" y="70" width="12" height="12" fill="#030712"/>
-                                            <rect x="35" y="70" width="12" height="12" fill="#030712"/>
-                                            <rect x="70" y="70" width="20" height="20" fill="#030712"/>
-                                            <rect x="100" y="70" width="12" height="12" fill="#10B981"/>
-                                            <rect x="130" y="70" width="12" height="12" fill="#030712"/>
-                                            <rect x="160" y="70" width="12" height="12" fill="#030712"/>
-
-                                            <rect x="15" y="100" width="12" height="12" fill="#10B981"/>
-                                            <rect x="40" y="100" width="12" height="12" fill="#030712"/>
-                                            <rect x="70" y="100" width="12" height="12" fill="#030712"/>
-                                            <rect x="140" y="100" width="20" height="12" fill="#030712"/>
-
-                                            <rect x="70" y="130" width="12" height="12" fill="#030712"/>
-                                            <rect x="100" y="130" width="25" height="12" fill="#10B981"/>
-                                            <rect x="140" y="130" width="12" height="12" fill="#030712"/>
-
-                                            <rect x="70" y="160" width="12" height="12" fill="#030712"/>
-                                            <rect x="100" y="160" width="12" height="12" fill="#030712"/>
-                                            <rect x="130" y="160" width="20" height="12" fill="#10B981"/>
-
-                                            <!-- Central Solana Icon Badge -->
-                                            <rect x="75" y="75" width="50" height="50" rx="10" fill="#030712"/>
-                                            <path d="M85 92h30l-5 5H80l5-5zm0 11h30l-5 5H80l5-5zm5-22h30l-5 5H85l5-5z" fill="#00F0FF"/>
-                                        </svg>
-                                    </div>
-
-                                    <div class="mt-4">
-                                        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Solana SPL Deposit Address:</label>
-                                        <div class="p-3 bg-obsidian-950 rounded-xl border border-slate-800 text-[11px] font-mono-num text-cyan-300 break-all font-semibold">
-                                            {{ solanaWalletAddress }}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button @click="copySolanaAddress" 
-                                        class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 font-extrabold text-xs rounded-xl border border-emerald-500/30 transition flex items-center justify-center gap-2">
-                                    <i class="fas fa-copy"></i>
-                                    <span>Copy Solana SPL Address</span>
-                                </button>
-                            </div>
-
-                            <!-- Deposit Form & Dynamic Fee Breakdown Box -->
-                            <div class="glass-panel p-6 rounded-2xl lg:col-span-2 space-y-4">
-                                <h3 class="text-base font-black text-white flex items-center gap-2">
-                                    <i class="fas fa-upload text-emerald-400"></i>
-                                    <span>Submit USDT Deposit Details</span>
-                                </h3>
-
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Amount (in USDT / $QD)</label>
-                                        <div class="relative">
-                                            <input type="number" v-model.number="depositForm.amount" placeholder="e.g. 250" 
-                                                   class="w-full glass-input rounded-xl pl-8 pr-3 py-2.5 text-xs font-bold font-mono-num text-emerald-300">
-                                            <span class="absolute left-3 top-2.5 text-slate-400 text-xs font-bold">$</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- DYNAMIC FEE BREAKDOWN BOX (DEPOSIT) -->
-                                    <div class="p-4 rounded-2xl bg-obsidian-950/90 border border-slate-800 space-y-2 text-xs">
-                                        <div class="flex justify-between items-center text-slate-300 font-bold border-b border-slate-800 pb-2">
-                                            <span>Deposit Fee Engine (Total 6%):</span>
-                                            <span v-if="depositFeeDetails.isMinimumRule" class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded font-mono-num">
-                                                Min $100 Fee Base Applied ($6 QD Minimum)
-                                            </span>
-                                        </div>
-                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono-num text-slate-400">
-                                            <div>3% GST (IGST+CGST): <strong class="text-white">${{ depositFeeDetails.gst }}</strong></div>
-                                            <div>2% Service: <strong class="text-white">${{ depositFeeDetails.service }}</strong></div>
-                                            <div>1% TDS: <strong class="text-white">${{ depositFeeDetails.tds }}</strong></div>
-                                            <div>Total Fee: <strong class="text-rose-400">${{ depositFeeDetails.totalFee }}</strong></div>
-                                        </div>
-                                        <div class="pt-2 border-t border-slate-800 flex justify-between items-center">
-                                            <span class="text-slate-400">Total Deducted Fees (6%):</span>
-                                            <span class="text-rose-400 font-bold font-mono-num">-${{ depositFeeDetails.totalFee }} QD</span>
-                                        </div>
-                                        <div class="flex justify-between items-center text-sm font-black pt-1">
-                                            <span class="text-emerald-400">Net Balance Credited to Wallet:</span>
-                                            <span class="text-emerald-300 font-mono-num cyan-glow">${{ depositFeeDetails.netCredited }} QD</span>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-300 mb-1">Attach Payment Screenshot Proof <span class="text-emerald-400">*</span></label>
-                                        <div class="border-2 border-dashed border-slate-700 hover:border-emerald-500/60 bg-obsidian-950/60 rounded-2xl p-4 text-center cursor-pointer transition"
-                                             @click="$refs.depositFileInput.click()">
-                                            <input type="file" ref="depositFileInput" accept="image/*" class="hidden" @change="handleDepositScreenshotUpload">
-                                            <i class="fas fa-image text-2xl text-emerald-400 mb-1"></i>
-                                            <p class="text-xs font-medium text-slate-300">Click to upload transaction confirmation screenshot</p>
-                                        </div>
-
-                                        <div v-if="depositForm.screenshot" class="mt-3 relative w-24 h-24 rounded-xl overflow-hidden border border-emerald-500/50">
-                                            <img :src="depositForm.screenshot" class="w-full h-full object-cover">
-                                            <button @click="depositForm.screenshot = null" class="absolute top-1 right-1 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px]">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <button @click="submitDepositRequest" 
-                                            class="w-full py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 text-obsidian-950 font-black text-xs rounded-xl shadow-lg transition transform active:scale-95">
-                                        <i class="fas fa-paper-plane mr-1"></i> Submit Deposit For Admin Verification
-                                    </button>
-                                </div>
-                            </div>
+                        <div>
+                            <label class="block text-xs font-mono text-slate-400 mb-1">PHONE NUMBER</label>
+                            <input v-model="signupForm.phone" type="text" placeholder="+91 9876543210" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-cyberCyan font-mono text-sm">
                         </div>
                     </div>
 
-                    <!-- Deposit History -->
-                    <div class="glass-panel p-6 rounded-3xl space-y-4">
-                        <h3 class="text-base font-bold text-white flex items-center gap-2">
-                            <i class="fas fa-history text-emerald-400"></i>
-                            <span>Solana Deposit History</span>
-                        </h3>
-
-                        <div v-if="userDeposits.length === 0" class="text-center py-8 text-slate-500 text-xs">
-                            No deposits submitted yet.
-                        </div>
-
-                        <div v-else class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse text-xs">
-                                <thead>
-                                    <tr class="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-400">
-                                        <th class="py-3 px-4">Timestamp</th>
-                                        <th class="py-3 px-4">Gross USDT</th>
-                                        <th class="py-3 px-4">Fee (6%)</th>
-                                        <th class="py-3 px-4">Net Credited ($QD)</th>
-                                        <th class="py-3 px-4">Proof</th>
-                                        <th class="py-3 px-4 text-right">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-800/60 font-mono-num">
-                                    <tr v-for="dep in userDeposits" :key="dep.id" class="hover:bg-slate-900/40">
-                                        <td class="py-3.5 px-4 text-slate-400">{{ dep.timestamp }}</td>
-                                        <td class="py-3.5 px-4 font-bold text-white">${{ dep.amount.toLocaleString() }}</td>
-                                        <td class="py-3.5 px-4 text-rose-400">-${{ dep.fee }}</td>
-                                        <td class="py-3.5 px-4 font-black text-emerald-400">${{ dep.netAmount.toLocaleString() }} QD</td>
-                                        <td class="py-3.5 px-4">
-                                            <button @click="openImageModal(dep.proofScreenshot)" class="text-cyan-400 hover:underline flex items-center gap-1">
-                                                <i class="fas fa-eye text-xs"></i> View
-                                            </button>
-                                        </td>
-                                        <td class="py-3.5 px-4 text-right">
-                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase font-sans"
-                                                  :class="{
-                                                      'bg-gold-500/20 text-gold-400 border border-gold-500/30': dep.status === 'pending',
-                                                      'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30': dep.status === 'approved',
-                                                      'bg-rose-500/20 text-rose-400 border border-rose-500/30': dep.status === 'rejected'
-                                                  }">
-                                                {{ dep.status === 'pending' ? 'Pending' : dep.status }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 3: QUANTUS DOLLARS & LEDGER -->
-                <div v-if="currentUserTab === 'wallet'" class="space-y-6">
-                    <div class="glass-panel p-6 sm:p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-cyan-400">Quantus Wallet Ledger</span>
-                            <h2 class="text-2xl font-black text-white font-cinzel-title">Quantus Dollars Available Balance</h2>
-                            <p class="text-xs text-slate-400">
-                                Updated via Solana USDT deposits or Admin quantitative trade executions.
-                            </p>
-                        </div>
-                        <div class="glass-panel-cyan px-8 py-5 rounded-3xl text-center shadow-xl">
-                            <div class="text-[10px] uppercase font-black text-cyan-300 tracking-wider">Quantus Dollars ($QD)</div>
-                            <div class="text-4xl font-black text-white font-mono-num mt-1 cyan-glow">
-                                ${{ currentUser.dollars.toLocaleString() }}
-                            </div>
-                        </div>
+                    <div>
+                        <label class="block text-xs font-mono text-slate-400 mb-1">CREATE PASSWORD</label>
+                        <input v-model="signupForm.password" type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-cyberCyan font-mono text-sm">
                     </div>
 
-                    <div class="glass-panel p-6 rounded-3xl space-y-4">
-                        <h3 class="text-base font-bold text-white flex items-center gap-2">
-                            <i class="fas fa-list-check text-cyan-400"></i>
-                            <span>Complete Portfolio & Trade Transaction Log</span>
-                        </h3>
-
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse text-xs">
-                                <thead>
-                                    <tr class="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-400">
-                                        <th class="py-3 px-4">Timestamp</th>
-                                        <th class="py-3 px-4">Trade / Description</th>
-                                        <th class="py-3 px-4">Asset & Type</th>
-                                        <th class="py-3 px-4 text-right">Quantus Dollars ($QD)</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-800/60 font-mono-num">
-                                    <tr v-for="(tx, idx) in userTransactions" :key="idx" class="hover:bg-slate-900/40">
-                                        <td class="py-3.5 px-4 text-slate-400 font-medium">{{ tx.date }}</td>
-                                        <td class="py-3.5 px-4 font-bold text-slate-200 font-sans">{{ tx.reason }}</td>
-                                        <td class="py-3.5 px-4 font-sans">
-                                            <span v-if="tx.tradeAsset" class="px-2 py-0.5 rounded text-[9px] font-black uppercase font-mono-num"
-                                                  :class="tx.orderType === 'BUY' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'">
-                                                {{ tx.tradeAsset }} • {{ tx.orderType }}
-                                            </span>
-                                            <span v-else class="text-slate-500 text-[10px]">GENERAL</span>
-                                        </td>
-                                        <td class="py-3.5 px-4 text-right font-black text-sm"
-                                            :class="tx.amount >= 0 ? 'text-emerald-400' : 'text-rose-400'">
-                                            {{ tx.amount >= 0 ? '+' : '' }}${{ Math.abs(tx.amount).toLocaleString() }} QD
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 4: QUANTUS AI ENGINES & VIP APPROVAL LOCK -->
-                <div v-if="currentUserTab === 'ai'" class="space-y-6">
-                    <div class="glass-panel p-6 sm:p-8 rounded-3xl space-y-3 relative overflow-hidden">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
-                            <div>
-                                <span class="text-[10px] font-black uppercase tracking-widest text-cyan-400 flex items-center gap-1.5">
-                                    <i class="fas fa-shield-halved"></i> Quantitative Execution Protocol
-                                </span>
-                                <h2 class="text-2xl font-black text-white font-cinzel-title mt-0.5">Quantus AI Automated Engines</h2>
-                                <p class="text-xs text-slate-300 max-w-2xl leading-relaxed mt-1">
-                                    Single active bot constraint enforced. Dynamic fee calculated from balance tier. VIP Neural Engine requires Admin VIP Approval.
-                                </p>
-                            </div>
-
-                            <div class="glass-panel-cyan p-4 rounded-2xl text-center shadow-lg border border-cyan-500/30">
-                                <span class="text-[10px] font-bold text-slate-300 uppercase tracking-wider">Your Active Tier Fee:</span>
-                                <div class="text-xl font-black text-white font-mono-num mt-1">
-                                    Standard: <span class="text-emerald-400 font-extrabold">${{ currentAiFee }} QD</span> | VIP: <span class="text-gold-400 font-extrabold">${{ currentAiFee * 2 }} QD</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 2 AI ENGINE CARDS -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- PROOF UPLOAD SECTION (MANDATORY 2-3 PHOTOS) -->
+                    <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <label class="block text-xs font-mono text-cyberCyan font-semibold">
+                            <i class="fa-solid fa-id-card mr-1"></i> COMPLIANCE PROOF DOCUMENTS (2-3 PHOTOS REQUIRED)
+                        </label>
+                        <p class="text-[11px] text-slate-400">Upload Govt ID (Aadhaar / Passport) & Address Proof photos for KYC verification.</p>
                         
-                        <!-- ENGINE 1: STANDARD AI ENGINE (25-30% MONTHLY YIELD) -->
-                        <div class="glass-panel p-6 sm:p-7 rounded-3xl relative overflow-hidden flex flex-col justify-between border transition-all duration-300"
-                             :class="currentUser.activeAi === 'standard' ? 'border-emerald-400/80 bg-gradient-to-b from-emerald-950/30 via-obsidian-900/90 to-obsidian-950 shadow-2xl shadow-emerald-500/10' : 'border-slate-800/80'">
-                            
-                            <div class="space-y-4">
-                                <div class="flex justify-between items-center">
-                                    <div class="w-13 h-13 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 text-cyan-400 flex items-center justify-center text-2xl font-bold border border-cyan-500/30 p-3">
-                                        <i class="fas fa-robot"></i>
-                                    </div>
-                                    <div class="flex items-center gap-3">
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase border"
-                                              :class="currentUser.activeAi === 'standard' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 animate-pulse' : 'bg-slate-800/60 text-slate-400 border-slate-700'">
-                                            {{ currentUser.activeAi === 'standard' ? '⚡ RUNNING ACTIVE' : 'OFFLINE' }}
-                                        </span>
-                                        <button @click="requestAiToggle('standard')" 
-                                                class="w-14 h-7 rounded-full transition-colors relative p-1 focus:outline-none cursor-pointer shadow-inner"
-                                                :class="currentUser.activeAi === 'standard' ? 'bg-emerald-500' : 'bg-slate-800 border border-slate-700'">
-                                            <div class="w-5 h-5 rounded-full bg-white shadow-md transition-transform"
-                                                 :class="currentUser.activeAi === 'standard' ? 'translate-x-7' : 'translate-x-0'"></div>
-                                        </button>
-                                    </div>
-                                </div>
+                        <input type="file" multiple @change="handleProofUpload" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-cyberCyan hover:file:bg-slate-700 cursor-pointer">
 
-                                <div>
-                                    <h3 class="text-xl font-black text-white font-cinzel-title">Quantus Standard AI Engine</h3>
-                                    <div class="mt-1 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-xl inline-block">
-                                        <span class="text-xs font-black text-emerald-400 font-mono-num">📈 25% – 30% Monthly Target Yield</span>
-                                    </div>
-                                    <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-                                        Standard quantitative liquidity algorithm targeting consistent monthly returns.
-                                    </p>
-                                </div>
-
-                                <div class="p-4 rounded-2xl bg-obsidian-950/80 border border-slate-800 space-y-2 text-xs">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-slate-400">Current Tier Fee:</span>
-                                        <span class="font-extrabold text-emerald-400 font-mono-num text-sm">${{ currentAiFee }} QD</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-slate-400">Access Status:</span>
-                                        <span class="font-bold text-emerald-400 uppercase">Unlocked (All Investors)</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="pt-5 mt-4 border-t border-slate-800 flex items-center justify-between">
-                                <span class="text-[11px] text-slate-400 flex items-center gap-1">
-                                    <i class="fas fa-shield text-cyan-400"></i> Standard Access
-                                </span>
-                                <button @click="requestAiToggle('standard')" 
-                                        class="px-4 py-2 rounded-xl text-xs font-black transition"
-                                        :class="currentUser.activeAi === 'standard' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 shadow-md'">
-                                    {{ currentUser.activeAi === 'standard' ? 'Deactivate Engine' : 'Activate Standard Engine' }}
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- ENGINE 2: VIP NEURAL ENGINE (35-40% MONTHLY YIELD + VIP LOCK) -->
-                        <div class="glass-panel p-6 sm:p-7 rounded-3xl relative overflow-hidden flex flex-col justify-between border transition-all duration-300"
-                             :class="currentUser.activeAi === 'vip' ? 'border-gold-400/80 bg-gradient-to-b from-gold-950/30 via-obsidian-900/90 to-obsidian-950 shadow-2xl shadow-gold-500/10' : 'border-slate-800/80'">
-                            
-                            <div class="space-y-4">
-                                <div class="flex justify-between items-center">
-                                    <div class="w-13 h-13 rounded-2xl bg-gradient-to-br from-gold-500/20 to-amber-500/20 text-gold-400 flex items-center justify-center text-2xl font-bold border border-gold-500/30 p-3">
-                                        <i class="fas fa-bolt"></i>
-                                    </div>
-                                    <div class="flex items-center gap-3">
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase border"
-                                              :class="currentUser.activeAi === 'vip' ? 'bg-gold-500/20 text-gold-300 border-gold-500/40 animate-pulse' : 'bg-slate-800/60 text-slate-400 border-slate-700'">
-                                            {{ currentUser.activeAi === 'vip' ? '⚡ RUNNING ACTIVE' : 'OFFLINE' }}
-                                        </span>
-                                        <button @click="requestAiToggle('vip')" 
-                                                :disabled="!currentUser.isVip"
-                                                class="w-14 h-7 rounded-full transition-colors relative p-1 focus:outline-none shadow-inner"
-                                                :class="currentUser.activeAi === 'vip' ? 'bg-gold-500' : 'bg-slate-800 border border-slate-700 opacity-60 cursor-not-allowed'">
-                                            <div class="w-5 h-5 rounded-full bg-white shadow-md transition-transform"
-                                                 :class="currentUser.activeAi === 'vip' ? 'translate-x-7' : 'translate-x-0'"></div>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <h3 class="text-xl font-black text-white font-cinzel-title">Quantus VIP Neural Engine</h3>
-                                        <span class="px-2.5 py-0.5 bg-gold-500/20 text-gold-300 border border-gold-500/40 rounded-full text-[9px] font-black uppercase">
-                                            VIP EXCLUSIVE
-                                        </span>
-                                    </div>
-                                    <div class="mt-1 px-3 py-1 bg-gold-500/10 border border-gold-500/30 rounded-xl inline-block">
-                                        <span class="text-xs font-black text-gold-400 font-mono-num">🚀 Up to 35% – 40% Monthly Yield</span>
-                                    </div>
-                                    <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-                                        High-frequency predictive neural execution. <strong class="text-gold-400">Only for VIP Members Exclusive.</strong>
-                                    </p>
-                                </div>
-
-                                <div class="p-4 rounded-2xl bg-obsidian-950/80 border border-slate-800 space-y-2 text-xs">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-slate-400">Current Tier Fee:</span>
-                                        <span class="font-extrabold text-gold-400 font-mono-num text-sm">${{ currentAiFee * 2 }} QD</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-slate-400">VIP Approval Status:</span>
-                                        <span class="font-black uppercase" :class="currentUser.isVip ? 'text-emerald-400' : 'text-rose-400'">
-                                            {{ currentUser.isVip ? 'Approved VIP' : (currentUser.vipRequestStatus === 'pending' ? 'Approval Requested' : 'Locked (Requires Admin Approval)') }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="pt-5 mt-4 border-t border-slate-800 flex items-center justify-between">
-                                <span class="text-[11px] text-slate-400 flex items-center gap-1">
-                                    <i class="fas fa-crown text-gold-400"></i> Exclusive VIP Access
-                                </span>
-                                
-                                <button v-if="currentUser.isVip" @click="requestAiToggle('vip')" 
-                                        class="px-4 py-2 rounded-xl text-xs font-black transition"
-                                        :class="currentUser.activeAi === 'vip' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-gradient-to-r from-gold-500 to-amber-500 text-obsidian-950 shadow-md'">
-                                    {{ currentUser.activeAi === 'vip' ? 'Deactivate VIP Engine' : 'Activate VIP Engine' }}
-                                </button>
-                                
-                                <button v-else @click="requestVipAccess" 
-                                        :disabled="currentUser.vipRequestStatus === 'pending'"
-                                        class="px-4 py-2 rounded-xl text-xs font-black bg-gold-500/20 text-gold-300 border border-gold-500/40 hover:bg-gold-500 hover:text-obsidian-950 transition">
-                                    {{ currentUser.vipRequestStatus === 'pending' ? 'VIP Approval Pending...' : 'Request VIP Access' }}
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- TAB 5: BANK & WITHDRAWALS (DYNAMIC FEE ENGINE) -->
-                <div v-if="currentUserTab === 'bank'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Bank Account Details Card -->
-                    <div class="glass-panel p-6 sm:p-7 rounded-3xl space-y-4">
-                        <h3 class="text-lg font-black text-white font-cinzel-title flex items-center gap-2">
-                            <i class="fas fa-building-columns text-cyan-400"></i>
-                            <span>Bank Wire Details</span>
-                        </h3>
-                        <p class="text-xs text-slate-400">Save bank account credentials for direct wire payouts.</p>
-
-                        <div class="space-y-3 pt-2">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">Account Holder Name</label>
-                                <input type="text" v-model="bankForm.holderName" placeholder="Alexander Wright" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">Bank Name</label>
-                                <input type="text" v-model="bankForm.bankName" placeholder="JPMorgan Chase Bank" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-300 mb-1">Account Number</label>
-                                    <input type="text" v-model="bankForm.accountNumber" placeholder="9876543210" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono-num">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-300 mb-1">IFSC / SWIFT</label>
-                                    <input type="text" v-model="bankForm.ifsc" placeholder="CHASUS33" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono-num uppercase">
-                                </div>
-                            </div>
-                            <button @click="saveBankDetails" class="w-full py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-xl shadow mt-2">
-                                Save Bank Credentials
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Withdrawal Desk Card & Dynamic Fee Breakdown -->
-                    <div class="glass-panel p-6 sm:p-7 rounded-3xl space-y-4">
-                        <h3 class="text-lg font-black text-white font-cinzel-title flex items-center gap-2">
-                            <i class="fas fa-money-bill-transfer text-emerald-400"></i>
-                            <span>Execute Wire Withdrawal</span>
-                        </h3>
-                        <p class="text-xs text-slate-400">Submit coin wire request. Requires security password confirmation.</p>
-
-                        <div class="space-y-3 pt-2">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">Gross Withdrawal Amount ($QD Coins)</label>
-                                <input type="number" v-model.number="withdrawForm.amount" placeholder="250" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono-num text-cyan-300 font-bold">
-                            </div>
-
-                            <!-- DYNAMIC FEE BREAKDOWN BOX (WITHDRAWAL) -->
-                            <div class="p-4 rounded-2xl bg-obsidian-950/90 border border-slate-800 space-y-2 text-xs">
-                                <div class="flex justify-between items-center text-slate-300 font-bold border-b border-slate-800 pb-2">
-                                    <span>Withdrawal Fee Engine (Total 6%):</span>
-                                    <span v-if="withdrawFeeDetails.isMinimumRule" class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded font-mono-num">
-                                        Min $100 Fee Base Applied ($6 QD Minimum)
-                                    </span>
-                                </div>
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono-num text-slate-400">
-                                    <div>3% GST (IGST+CGST): <strong class="text-white">${{ withdrawFeeDetails.gst }}</strong></div>
-                                    <div>2% Service: <strong class="text-white">${{ withdrawFeeDetails.service }}</strong></div>
-                                    <div>1% TDS: <strong class="text-white">${{ withdrawFeeDetails.tds }}</strong></div>
-                                    <div>Total Fee: <strong class="text-rose-400">${{ withdrawFeeDetails.totalFee }}</strong></div>
-                                </div>
-                                <div class="pt-2 border-t border-slate-800 flex justify-between items-center">
-                                    <span class="text-slate-400">Total Deducted Fees (6%):</span>
-                                    <span class="text-rose-400 font-bold font-mono-num">-${{ withdrawFeeDetails.totalFee }} QD</span>
-                                </div>
-                                <div class="flex justify-between items-center text-sm font-black pt-1">
-                                    <span class="text-emerald-400">Net Transferred to Bank Account:</span>
-                                    <span class="text-emerald-300 font-mono-num cyan-glow">${{ withdrawFeeDetails.netCredited }} QD</span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">Security Password Confirmation</label>
-                                <input type="password" v-model="withdrawForm.password" placeholder="••••••••" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs">
-                            </div>
-
-                            <button @click="handleWithdrawalSubmit" class="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-cyan-500 text-obsidian-950 font-black text-xs rounded-xl shadow mt-2">
-                                Transmit Withdrawal Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 6: TRADINGVIEW LIVE CHARTS (UPGRADED MULTI-ASSET DESK) -->
-                <div v-if="currentUserTab === 'charts'" class="space-y-6 max-w-full overflow-hidden">
-                    <div class="glass-panel p-4 sm:p-6 rounded-3xl space-y-4 border border-cyan-500/20 max-w-full overflow-hidden">
-                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
-                            <div>
-                                <span class="text-[10px] font-black uppercase tracking-widest text-cyan-400">Market Intelligence Desk</span>
-                                <h2 class="text-xl font-black text-white font-cinzel-title">Live TradingView Multi-Asset Intelligence</h2>
-                                <p class="text-xs text-slate-400 mt-0.5">Real-time institutional charting across Crypto, Forex, Commodities &amp; Indices</p>
-                            </div>
-
-                            <!-- Multi-Market Category & Asset Selector -->
-                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-                                <!-- Category Pills -->
-                                <div class="flex items-center bg-obsidian-950 p-1 rounded-xl border border-slate-800 overflow-x-auto no-scrollbar">
-                                    <button v-for="cat in chartCategories" :key="cat.name"
-                                            @click="selectedCategory = cat.name; selectedChartPair = cat.assets[0].symbol"
-                                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap"
-                                            :class="selectedCategory === cat.name ? 'bg-cyan-500 text-obsidian-950 shadow-md font-black' : 'text-slate-400 hover:text-white'">
-                                        {{ cat.name }}
-                                    </button>
-                                </div>
-
-                                <!-- Asset Dropdown Select -->
-                                <div class="relative min-w-[200px]">
-                                    <select v-model="selectedChartPair"
-                                            class="w-full bg-obsidian-950 border border-cyan-500/40 rounded-xl px-3.5 py-2 text-xs font-bold text-cyan-300 font-mono-num focus:outline-none focus:border-cyan-400 cursor-pointer shadow-inner">
-                                        <option v-for="asset in activeCategoryAssets" :key="asset.symbol" :value="asset.symbol">
-                                            {{ asset.name }}
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Active Symbol Quick Stats Strip -->
-                        <div class="flex items-center justify-between text-xs font-mono-num px-2 text-slate-400">
-                            <span class="flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                <strong class="text-white font-sans uppercase">Active Symbol:</strong> 
-                                <span class="text-cyan-400 font-bold">{{ selectedChartPair }}</span>
-                            </span>
-                            <span class="hidden sm:inline text-[11px] text-slate-500">Auto-Scaling Latency: &lt;1.2ms</span>
-                        </div>
-
-                        <!-- Embedded TradingView Embed Frame - 100% Fluid & Responsive -->
-                        <div class="w-full max-w-full h-[450px] sm:h-[580px] rounded-2xl overflow-hidden border border-slate-800 bg-obsidian-950 shadow-2xl relative">
-                            <iframe :key="selectedChartPair"
-                                    :src="`https://s.tradingview.com/widgetembed/?frameElementId=tradingview_widget&symbol=${encodeURIComponent(selectedChartPair)}&interval=D&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=0A0F1D&theme=dark&style=1&timezone=Etc%2FUTC`"
-                                    class="w-full h-full border-0 block"
-                                    allowtransparency="true"
-                                    scrolling="no"></iframe>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 7: INSTITUTIONAL LIVE DESK -->
-                <div v-if="currentUserTab === 'chat'" class="h-[600px] glass-panel rounded-3xl overflow-hidden flex flex-col border border-cyan-500/20">
-                    <div class="p-4 bg-obsidian-950 border-b border-slate-800 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-emerald-500 flex items-center justify-center text-lg text-obsidian-950 font-bold shadow">
-                                <i class="fas fa-headset"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-black text-sm text-white font-cinzel-title">Quantus Prime Institutional Live Desk</h3>
-                                <p class="text-[10px] text-emerald-400 flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Desk Admin Online | Instant Support
-                                </p>
+                        <!-- Proof Previews -->
+                        <div v-if="signupForm.proofPhotos.length > 0" class="flex flex-wrap gap-2 pt-2">
+                            <div v-for="(img, idx) in signupForm.proofPhotos" :key="idx" class="w-16 h-16 rounded-lg overflow-hidden border border-slate-700 relative">
+                                <img :src="img" class="w-full h-full object-cover">
+                                <span class="absolute bottom-0 right-0 bg-slate-900/80 text-[9px] px-1 text-cyberCyan font-mono">#{{idx+1}}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex-1 p-5 overflow-y-auto space-y-4 bg-obsidian-950/40">
-                        <div v-for="msg in currentUserChatMessages" :key="msg.id" 
-                             class="flex flex-col"
-                             :class="msg.sender === 'user' ? 'items-end' : 'items-start'">
-                            <div class="max-w-md px-4 py-2.5 rounded-2xl text-xs"
-                                 :class="msg.sender === 'user' ? 'bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-bold rounded-br-none' : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700/80'">
-                                {{ msg.text }}
-                            </div>
-                            <span class="text-[9px] text-slate-500 mt-1 px-1 font-mono-num">{{ msg.time }}</span>
-                        </div>
+                    <!-- 18+ AGE CONFIRMATION CHECKBOX -->
+                    <div class="flex items-center space-x-2 pt-1">
+                        <input type="checkbox" id="ageCheck" v-model="signupForm.is18Plus" class="w-4 h-4 rounded bg-slate-950 border-slate-800 text-cyberCyan focus:ring-cyberCyan">
+                        <label for="ageCheck" class="text-xs text-slate-300 font-mono">I confirm that I am 18 years of age or older and agree to Terms.</label>
                     </div>
 
-                    <div class="p-4 bg-obsidian-900 border-t border-slate-800 flex gap-3">
-                        <input type="text" v-model="userChatMessage" @keyup.enter="sendUserMessage" placeholder="Type message to Quantus Desk Admin..." 
-                               class="flex-1 glass-input rounded-xl px-4 py-2.5 text-xs">
-                        <button @click="sendUserMessage" class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-xl shadow">
-                            Transmit Message
-                        </button>
-                    </div>
-                </div>
-
-                <!-- TAB 8: ABOUT QUANTUS GROUP -->
-                <div v-if="currentUserTab === 'about'" class="space-y-6">
-                    <div class="glass-panel-gold p-6 sm:p-8 rounded-3xl relative overflow-hidden border border-gold-500/30">
-                        <div class="space-y-3 relative z-10 max-w-3xl">
-                            <div class="flex items-center gap-2">
-                                <span class="px-3 py-1 bg-gold-500/20 text-gold-300 border border-gold-500/40 text-[10px] font-black uppercase tracking-widest rounded-full">
-                                    Parent Group Subsidiary
-                                </span>
-                            </div>
-                            <h1 class="text-2xl sm:text-4xl font-black text-white font-cinzel-title">
-                                Quantus Prime — Quantitative Financial Intelligence
-                            </h1>
-                            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                Quantus Prime is an operating quantitative asset management firm under the umbrella of <strong>Quantus Group</strong>. Headquartered in Singapore since 2018, the group launched operations in India on October 1, 2026.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- ========================================== -->
-            <!-- ADMIN MASTER CONSOLE                       -->
-            <!-- ========================================== -->
-            <div v-if="currentRole === 'admin'" class="space-y-6">
-
-                <!-- TAB 1: PROOF VERIFICATION REQUESTS -->
-                <div v-if="currentAdminTab === 'approvals'" class="glass-panel p-6 sm:p-8 rounded-3xl space-y-6 border border-rose-500/20">
-                    <div>
-                        <h2 class="text-xl font-black text-white font-cinzel-title">Pending Identity Verification Requests</h2>
-                        <p class="text-xs text-slate-400 mt-1">Inspect uploaded proof photos and 18+ age status before approving user account</p>
-                    </div>
-
-                    <div v-if="pendingUsers.length === 0" class="text-center py-12 text-slate-500">
-                        <i class="fas fa-check-circle text-4xl mb-2 text-slate-700"></i>
-                        <p class="text-xs">No user applications currently pending compliance review!</p>
-                    </div>
-
-                    <div v-else class="space-y-4">
-                        <div v-for="u in pendingUsers" :key="u.id" 
-                             class="p-5 rounded-2xl bg-obsidian-950 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-5">
-                            
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-2">
-                                    <h4 class="font-extrabold text-white text-base">{{ u.name }}</h4>
-                                    <span class="text-[9px] bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-full font-bold">
-                                        PENDING COMPLIANCE
-                                    </span>
-                                </div>
-                                <div class="text-xs text-slate-400 flex flex-wrap gap-4 font-mono-num">
-                                    <span><i class="fas fa-envelope mr-1 text-slate-500"></i>{{ u.email }}</span>
-                                    <span><i class="fas fa-phone mr-1 text-slate-500"></i>{{ u.phone }}</span>
-                                    <span class="text-emerald-400"><i class="fas fa-user-check mr-1"></i>18+ Verified</span>
-                                </div>
-
-                                <div class="pt-2">
-                                    <div class="text-[11px] font-bold text-slate-400 mb-1.5">Uploaded Identity Proof Documents ({{ u.proofs.length }} attached):</div>
-                                    <div class="flex items-center gap-2">
-                                        <div v-for="(img, imgIdx) in u.proofs" :key="imgIdx" 
-                                             @click="openImageModal(img)"
-                                             class="w-16 h-16 rounded-xl border border-slate-700 overflow-hidden cursor-pointer hover:border-cyan-400 transition group relative">
-                                            <img :src="img" class="w-full h-full object-cover">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-2">
-                                <button @click="approveUser(u.id)" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow">
-                                    Approve Account (+100 $QD Welcome)
-                                </button>
-                                <button @click="rejectUser(u.id)" class="px-4 py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-300 font-bold text-xs rounded-xl">
-                                    Decline
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 2: SOLANA DEPOSIT APPROVALS DESK -->
-                <div v-if="currentAdminTab === 'deposits'" class="glass-panel p-6 sm:p-8 rounded-3xl space-y-6">
-                    <div>
-                        <h2 class="text-xl font-black text-white font-cinzel-title">Solana Deposit Verification Desk</h2>
-                        <p class="text-xs text-slate-400 mt-1">Review user Solana USDT payment screenshot proof and credit net $QD (after 6% fee)</p>
-                    </div>
-
-                    <div v-if="pendingDeposits.length === 0" class="text-center py-12 text-slate-500 text-xs">
-                        No deposit requests currently pending verification.
-                    </div>
-
-                    <div v-else class="space-y-4">
-                        <div v-for="dep in pendingDeposits" :key="dep.id" 
-                             class="p-5 rounded-2xl bg-obsidian-950 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-5">
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-extrabold text-white text-base">{{ getUserName(dep.userId) }}</span>
-                                    <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono-num font-bold">
-                                        Solana (SPL)
-                                    </span>
-                                </div>
-                                <div class="text-sm font-black text-white font-mono-num">
-                                    Gross USDT: ${{ dep.amount.toLocaleString() }} | 6% Fee: -${{ dep.fee }} | Net Credited: <span class="text-emerald-400">${{ dep.netAmount.toLocaleString() }} QD</span>
-                                </div>
-                                <div @click="openImageModal(dep.proofScreenshot)" class="w-20 h-20 rounded-xl border border-slate-700 overflow-hidden cursor-pointer hover:border-emerald-400 transition">
-                                    <img :src="dep.proofScreenshot" class="w-full h-full object-cover">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-2">
-                                <button @click="approveDeposit(dep.id)" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow">
-                                    Approve & Credit Net ${{ dep.netAmount }} QD
-                                </button>
-                                <button @click="rejectDeposit(dep.id)" class="px-4 py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-300 font-bold text-xs rounded-xl">
-                                    Reject
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 3: TREASURY & DAILY TRADE EXECUTION DESK (WITH TRADE ASSET LOGS & BULK AI CONTROLS) -->
-                <div v-if="currentAdminTab === 'yield_coins'" class="glass-panel p-6 sm:p-8 rounded-3xl space-y-6">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-slate-800 pb-5">
-                        <!-- Bulk AI Model Yield Modifier Card -->
-                        <div class="glass-panel-gold p-4 rounded-2xl space-y-2">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-gold-400 block">Standard AI Users Yield Modifier (+% / -%)</span>
-                            <div class="flex gap-2">
-                                <input type="number" v-model.number="bulkStandardYieldInput" step="0.5" placeholder="e.g. +3.0" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs font-mono-num font-bold">
-                                <button @click="applyAiModelYield('standard')" class="px-3 py-1.5 bg-gold-500 text-obsidian-950 font-black text-xs rounded-xl whitespace-nowrap">
-                                    Apply Standard AI
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="glass-panel-gold p-4 rounded-2xl space-y-2">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-gold-400 block">VIP AI Users Yield Modifier (+% / -%)</span>
-                            <div class="flex gap-2">
-                                <input type="number" v-model.number="bulkVipYieldInput" step="0.5" placeholder="e.g. +5.0" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs font-mono-num font-bold">
-                                <button @click="applyAiModelYield('vip')" class="px-3 py-1.5 bg-gold-500 text-obsidian-950 font-black text-xs rounded-xl whitespace-nowrap">
-                                    Apply VIP AI
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="glass-panel-cyan p-4 rounded-2xl space-y-2">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-cyan-400 block">All Accounts Global Yield Rate (+% / -%)</span>
-                            <div class="flex gap-2">
-                                <input type="number" v-model.number="globalYieldInput" step="0.5" placeholder="e.g. +2.5" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs font-mono-num font-bold">
-                                <button @click="applyGlobalYield" class="px-3 py-1.5 bg-cyan-500 text-obsidian-950 font-black text-xs rounded-xl whitespace-nowrap">
-                                    Apply Global
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- USER BALANCES & TRADE EXECUTION ENTRY TABLE -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-xs">
-                            <thead>
-                                <tr class="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-400">
-                                    <th class="py-3 px-4">User Details</th>
-                                    <th class="py-3 px-4">VIP Status</th>
-                                    <th class="py-3 px-4">Active AI Engine</th>
-                                    <th class="py-3 px-4">Quantus Dollars ($QD)</th>
-                                    <th class="py-3 px-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-800/60 font-mono-num">
-                                <tr v-for="u in users" :key="u.id" class="hover:bg-slate-900/40">
-                                    <td class="py-3.5 px-4 font-bold text-slate-200 font-sans">
-                                        {{ u.name }}
-                                        <span class="block text-[10px] font-normal text-slate-500 font-mono-num">{{ u.email }}</span>
-                                    </td>
-                                    <td class="py-3.5 px-4 font-sans">
-                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase"
-                                              :class="u.isVip ? 'bg-gold-500/20 text-gold-400 border border-gold-500/30' : 'bg-slate-800 text-slate-400'">
-                                            {{ u.isVip ? '👑 VIP MEMBER' : 'STANDARD' }}
-                                        </span>
-                                    </td>
-                                    <td class="py-3.5 px-4 font-sans font-bold uppercase text-[10px]"
-                                        :class="u.activeAi ? 'text-emerald-400' : 'text-slate-500'">
-                                        {{ u.activeAi ? u.activeAi : 'None' }}
-                                    </td>
-                                    <td class="py-3.5 px-4 font-black text-white text-sm cyan-glow">
-                                        ${{ u.dollars.toLocaleString() }} QD
-                                    </td>
-                                    <td class="py-3.5 px-4 text-right font-sans">
-                                        <button @click="openTradeExecutionModal(u)" class="px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black rounded-lg text-xs">
-                                            + Execute Trade PnL Log
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- TAB 4: VIP AI APPROVAL REQUESTS MANAGER -->
-                <div v-if="currentAdminTab === 'vip_requests'" class="glass-panel p-6 sm:p-8 rounded-3xl space-y-6">
-                    <div>
-                        <h2 class="text-xl font-black text-white font-cinzel-title">VIP AI Access Requests Manager</h2>
-                        <p class="text-xs text-slate-400 mt-1">Approve or Reject VIP Member Access to activate the 35-40% Neural AI Engine</p>
-                    </div>
-
-                    <div v-if="pendingVipRequests.length === 0" class="text-center py-12 text-slate-500 text-xs">
-                        No pending VIP access requests in queue.
-                    </div>
-
-                    <div v-else class="space-y-4">
-                        <div v-for="u in pendingVipRequests" :key="u.id" class="p-5 rounded-2xl bg-obsidian-950 border border-slate-800 flex items-center justify-between">
-                            <div>
-                                <div class="font-extrabold text-white text-base">{{ u.name }}</div>
-                                <div class="text-xs text-slate-400 font-mono-num">{{ u.email }} | Balance: ${{ u.dollars }} QD</div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button @click="approveVipUser(u.id)" class="px-4 py-2 bg-gold-500 hover:bg-gold-400 text-obsidian-950 font-black text-xs rounded-xl shadow">
-                                    Grant VIP Approval
-                                </button>
-                                <button @click="rejectVipUser(u.id)" class="px-4 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 font-bold text-xs rounded-xl">
-                                    Decline VIP Request
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 5: WITHDRAWAL APPROVALS QUEUE -->
-                <div v-if="currentAdminTab === 'withdrawals'" class="glass-panel p-6 sm:p-8 rounded-3xl space-y-6">
-                    <div>
-                        <h2 class="text-xl font-black text-white font-cinzel-title">Pending Wire Withdrawal Requests</h2>
-                        <p class="text-xs text-slate-400 mt-1">Review user bank wire requests (6% fees deducted)</p>
-                    </div>
-
-                    <div v-if="pendingWithdrawals.length === 0" class="text-center py-12 text-slate-500 text-xs">
-                        No pending withdrawal requests in queue.
-                    </div>
-
-                    <div v-else class="space-y-4">
-                        <div v-for="w in pendingWithdrawals" :key="w.id" class="p-5 rounded-2xl bg-obsidian-950 border border-slate-800 flex items-center justify-between">
-                            <div class="space-y-1">
-                                <div class="text-sm font-bold text-white">{{ getUserName(w.userId) }}</div>
-                                <div class="text-xs font-black text-cyan-300 font-mono-num">
-                                    Gross Requested: ${{ w.amount.toLocaleString() }} | Net Payout: <span class="text-emerald-400">${{ w.netAmount.toLocaleString() }} QD</span>
-                                </div>
-                                <div class="text-[10px] text-slate-400 font-mono-num">
-                                    Bank: {{ w.bankInfo.bankName }} | Acc: {{ w.bankInfo.accountNumber }} ({{ w.bankInfo.ifsc }})
-                                </div>
-                            </div>
-                            <button @click="processWithdrawal(w.id)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl">
-                                Approve & Transfer Net ${{ w.netAmount }} QD Wire
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 6: ADMIN CHAT INBOX -->
-                <div v-if="currentAdminTab === 'chat'" class="h-[550px] glass-panel rounded-3xl overflow-hidden grid grid-cols-1 md:grid-cols-3">
-                    <div class="bg-obsidian-950 border-r border-slate-800 overflow-y-auto p-3 space-y-2">
-                        <div v-for="u in approvedUsers" :key="u.id" 
-                             @click="activeAdminChatUserId = u.id"
-                             class="p-3 rounded-2xl cursor-pointer transition flex items-center justify-between"
-                             :class="activeAdminChatUserId === u.id ? 'bg-slate-800 border border-cyan-500/40' : 'hover:bg-slate-900'">
-                            <div class="font-bold text-xs text-white">{{ u.name }}</div>
-                            <span class="text-[10px] text-cyan-400 font-bold font-mono-num">${{ u.dollars }} QD</span>
-                        </div>
-                    </div>
-
-                    <div class="md:col-span-2 flex flex-col justify-between bg-obsidian-950/40">
-                        <div v-if="activeAdminChatUser" class="p-4 border-b border-slate-800 bg-obsidian-900 flex justify-between items-center">
-                            <span class="font-bold text-xs text-white">Live Session: {{ activeAdminChatUser.name }}</span>
-                            <button @click="adjustDollars(activeAdminChatUser.id, 500, 'Today +$500 QD credited via Admin Chat Desk')" 
-                                    class="px-3 py-1 bg-cyan-500 text-obsidian-950 text-xs font-black rounded-lg">
-                                + Credit $500 QD
-                            </button>
-                        </div>
-
-                        <div class="flex-1 p-4 overflow-y-auto space-y-3">
-                            <div v-for="msg in activeChatMessages" :key="msg.id" 
-                                 class="flex flex-col" :class="msg.sender === 'admin' ? 'items-end' : 'items-start'">
-                                <div class="px-3.5 py-2 rounded-2xl text-xs"
-                                     :class="msg.sender === 'admin' ? 'bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-bold' : 'bg-slate-800 text-slate-200'">
-                                    {{ msg.text }}
-                                </div>
-                                <span class="text-[9px] text-slate-500 mt-1 font-mono-num">{{ msg.time }}</span>
-                            </div>
-                        </div>
-
-                        <div v-if="activeAdminChatUser" class="p-3 border-t border-slate-800 bg-obsidian-900 flex gap-2">
-                            <input type="text" v-model="adminReplyText" @keyup.enter="sendAdminReply" placeholder="Type reply from Quantus Desk..." class="flex-1 glass-input rounded-xl px-3 py-2 text-xs">
-                            <button @click="sendAdminReply" class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-xl">Transmit</button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-        </main>
-
-        <!-- FOOTER -->
-        <footer class="mt-auto border-t border-slate-800/80 bg-obsidian-950/80 px-6 py-4 text-[11px] text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div>
-                © 2026 Quantus Prime Global Capital Ltd. Operating Entity under Quantus Group (Singapore).
-            </div>
-            <div class="flex items-center gap-6">
-                <button @click="navigateToTab('about')" class="hover:text-gold-400 transition">About Quantus Group</button>
-                <button @click="openSupabaseModal" class="hover:text-cyan-400 transition">Database Config</button>
-                <button @click="switchToAdminMode" class="text-slate-600 hover:text-cyan-400 transition font-mono-num text-[10px]">
-                    <i class="fas fa-lock text-[9px] mr-1"></i> Quantus Admin Portal
-                </button>
-            </div>
-        </footer>
-
-        <!-- SUPABASE CONFIG MODAL -->
-        <div v-if="supabaseModalOpen" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-            <div class="bg-obsidian-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                    <h3 class="font-black text-white text-base flex items-center gap-2">
-                        <i class="fas fa-database text-cyan-400"></i> Supabase Connection Settings
-                    </h3>
-                    <button @click="supabaseModalOpen = false" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
-                </div>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    Paste your project credentials to connect real Supabase tables for live cross-device user data sync.
-                </p>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Supabase Project URL</label>
-                    <input type="text" v-model="supabaseConfig.url" placeholder="https://your-project.supabase.co" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono-num">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Supabase Anon API Key</label>
-                    <input type="password" v-model="supabaseConfig.anonKey" placeholder="eyJhbGciOiJIUzI1NiIsIn..." class="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono-num">
-                </div>
-                <div class="flex gap-2 pt-2">
-                    <button @click="saveSupabaseConfig" class="flex-1 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-xl">
-                        Save & Connect Supabase
-                    </button>
-                    <button @click="supabaseModalOpen = false" class="px-4 py-2.5 bg-slate-800 text-slate-300 font-bold text-xs rounded-xl">
-                        Close
+                    <button @click="handleSignUp" class="w-full bg-cyberCyan text-slate-950 font-bold py-3 rounded-xl hover:bg-cyan-300 transition font-mono tracking-wider shadow-lg shadow-cyberCyan/20">
+                        SUBMIT INSTITUTIONAL APPLICATION
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- LIGHTBOX PREVIEW MODAL -->
-        <div v-if="modalImageSrc" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4" @click="modalImageSrc = null">
-            <div class="relative max-w-3xl w-full bg-obsidian-900 border border-slate-800 rounded-3xl overflow-hidden p-3 text-center" @click.stop>
-                <img :src="modalImageSrc" class="w-full max-h-[80vh] object-contain rounded-2xl">
-                <button @click="modalImageSrc = null" class="absolute top-5 right-5 bg-obsidian-950/80 text-white w-9 h-9 rounded-full flex items-center justify-center border border-slate-700">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- AI ENGINE CONFIRMATION MODAL -->
-        <div v-if="aiConfirmModal.show" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-            <div class="bg-obsidian-900 border rounded-3xl p-6 sm:p-7 max-w-md w-full space-y-5 shadow-2xl relative overflow-hidden"
-                 :class="aiConfirmModal.engineType === 'vip' ? 'border-gold-500/40 glass-panel-gold' : 'border-cyan-500/40 glass-panel-cyan'">
-                
-                <div class="text-center space-y-2">
-                    <div class="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center text-2xl shadow-lg mb-2"
-                         :class="aiConfirmModal.action === 'activate' ? (aiConfirmModal.engineType === 'vip' ? 'bg-gold-500/20 text-gold-400 border border-gold-500/40' : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40') : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'">
-                        <i class="fas" :class="aiConfirmModal.action === 'activate' ? (aiConfirmModal.engineType === 'vip' ? 'fa-bolt' : 'fa-robot') : 'fa-power-off'"></i>
-                    </div>
-
-                    <h3 class="text-xl font-black text-white font-cinzel-title">
-                        Confirm {{ aiConfirmModal.action === 'activate' ? 'Activation' : 'Deactivation' }}
-                    </h3>
-                    <p class="text-xs text-slate-300">
-                        Quantus {{ aiConfirmModal.engineType === 'vip' ? 'VIP Neural Engine (35-40%)' : 'Standard AI Engine (25-30%)' }}
-                    </p>
+        <!-- 2. PENDING COMPLIANCE APPROVAL VIEW -->
+        <div v-if="currentUser && currentUser.status === 'pending' && !isAdminMode" class="max-w-2xl mx-auto my-12 text-center">
+            <div class="glass-card p-8 md:p-12 rounded-3xl border border-amber-500/30 gold-glow space-y-6">
+                <div class="w-20 h-20 mx-auto rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 text-3xl">
+                    <i class="fa-solid fa-user-clock animate-pulse"></i>
                 </div>
-
-                <div class="p-4 rounded-2xl bg-obsidian-950/90 border border-slate-800 space-y-3 text-xs">
-                    <div v-if="aiConfirmModal.action === 'activate'" class="space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-slate-400">Required Tier Fee:</span>
-                            <span class="font-extrabold font-mono-num text-sm" :class="aiConfirmModal.engineType === 'vip' ? 'text-gold-400' : 'text-cyan-400'">
-                                ${{ aiConfirmModal.fee }} QD
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-slate-400">Available Balance:</span>
-                            <span class="font-bold text-slate-200 font-mono-num">${{ currentUser ? currentUser.dollars.toLocaleString() : 0 }} QD</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex gap-3 pt-1">
-                    <button @click="confirmAiToggle" 
-                            class="flex-1 py-3 font-black text-xs rounded-xl shadow-lg transition transform active:scale-95"
-                            :class="aiConfirmModal.action === 'activate' ? (aiConfirmModal.engineType === 'vip' ? 'bg-gradient-to-r from-gold-500 to-amber-500 text-obsidian-950' : 'bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950') : 'bg-rose-600 hover:bg-rose-500 text-white'">
-                        {{ aiConfirmModal.action === 'activate' ? `Confirm & Deduct $${aiConfirmModal.fee} QD` : 'Confirm Deactivation' }}
-                    </button>
-                    <button @click="aiConfirmModal.show = false" class="px-5 py-3 bg-slate-800 text-slate-300 font-bold text-xs rounded-xl">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ADMIN TRADE EXECUTION ENTRY MODAL -->
-        <div v-if="tradeModalUser" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-            <div class="bg-obsidian-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
-                <h3 class="font-black text-white text-base font-cinzel-title">Execute Quantitative Trade PnL Log: {{ tradeModalUser.name }}</h3>
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs text-slate-300 font-bold mb-1">Trade Asset Pair</label>
-                        <select v-model="tradeForm.asset" class="w-full glass-input rounded-xl px-3 py-2 text-xs font-mono-num font-bold">
-                            <option value="EUR/USD">💱 EUR/USD</option>
-                            <option value="XAU/USD">🪙 XAU/USD (Gold)</option>
-                            <option value="BTC/USDT">₿ BTC/USDT</option>
-                            <option value="SOL/USDT">⚡ SOL/USDT</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-300 font-bold mb-1">Order Type</label>
-                        <select v-model="tradeForm.orderType" class="w-full glass-input rounded-xl px-3 py-2 text-xs font-bold">
-                            <option value="BUY">🟢 BUY (LONG)</option>
-                            <option value="SELL">🔴 SELL (SHORT)</option>
-                        </select>
-                    </div>
-                </div>
-
                 <div>
-                    <label class="block text-xs text-slate-300 font-bold mb-1">Profit / Loss Amount ($QD)</label>
-                    <input type="number" v-model.number="tradeForm.amount" placeholder="e.g. 150 or -50" class="w-full glass-input rounded-xl px-3 py-2 text-xs font-bold text-cyan-300 font-mono-num">
+                    <h2 class="text-2xl font-bold font-mono text-white">ACCOUNT UNDER COMPLIANCE REVIEW</h2>
+                    <p class="text-sm text-slate-400 mt-2 font-mono">Your identification proof documents have been submitted to Quantus Compliance Desk.</p>
                 </div>
 
-                <div>
-                    <label class="block text-xs text-slate-300 font-bold mb-1">Trade Description / Note</label>
-                    <input type="text" v-model="tradeForm.reason" placeholder="Neural Arbitrage Executed at 1.0845" class="w-full glass-input rounded-xl px-3 py-2 text-xs">
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left font-mono text-xs text-slate-300 space-y-1">
+                    <p><span class="text-slate-500">Applicant:</span> {{ currentUser.fullName }}</p>
+                    <p><span class="text-slate-500">Email:</span> {{ currentUser.email }}</p>
+                    <p><span class="text-slate-500">Submitted Proofs:</span> {{ currentUser.proofPhotos ? currentUser.proofPhotos.length : 0 }} Files Uploaded</p>
+                    <p><span class="text-slate-500">Status:</span> <span class="text-amber-400 font-bold">Pending Admin Desk Sign-Off</span></p>
                 </div>
 
-                <div class="flex gap-2 pt-2">
-                    <button @click="confirmTradeExecution" class="flex-1 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-xl">
-                        Execute PnL & Update Wallet
-                    </button>
-                    <button @click="tradeModalUser = null" class="px-4 py-2.5 bg-slate-800 text-slate-300 font-bold text-xs rounded-xl">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- VUE 3 & REACTION LOGIC -->
-    <script>
-        const { createApp, ref, computed, reactive, onMounted } = Vue;
-
-        createApp({
-            setup() {
-                const currentRole = ref('user');
-                const selectedUserId = ref('u1');
-                const currentUserTab = ref('dashboard');
-                const currentAdminTab = ref('approvals');
-                const drawerOpen = ref(false);
-                const authScreenOpen = ref(false);
-                const authTab = ref('login');
-                const toast = reactive({ show: false, message: '', type: 'success' });
-                const solanaWalletAddress = ref("GEDNYHQ7NtiGWuxweDLwd1XzBwyv1t7K1wUPPpa1JNKp");
-
-                // MULTI-ASSET TRADINGVIEW CATEGORIES AND SYMBOLS
-                const chartCategories = [
-                    {
-                        name: 'Crypto',
-                        assets: [
-                            { name: 'Bitcoin (BTC/USDT)', symbol: 'BINANCE:BTCUSDT' },
-                            { name: 'Ethereum (ETH/USDT)', symbol: 'BINANCE:ETHUSDT' },
-                            { name: 'Solana (SOL/USDT)', symbol: 'BINANCE:SOLUSDT' },
-                            { name: 'Ripple (XRP/USDT)', symbol: 'BINANCE:XRPUSDT' },
-                            { name: 'BNB (BNB/USDT)', symbol: 'BINANCE:BNBUSDT' },
-                            { name: 'Dogecoin (DOGE/USDT)', symbol: 'BINANCE:DOGEUSDT' }
-                        ]
-                    },
-                    {
-                        name: 'Forex',
-                        assets: [
-                            { name: 'EUR / USD', symbol: 'FX:EURUSD' },
-                            { name: 'GBP / USD', symbol: 'FX:GBPUSD' },
-                            { name: 'USD / JPY', symbol: 'FX:USDJPY' },
-                            { name: 'AUD / USD', symbol: 'FX:AUDUSD' },
-                            { name: 'USD / CAD', symbol: 'FX:USDCAD' },
-                            { name: 'GBP / JPY', symbol: 'FX:GBPJPY' }
-                        ]
-                    },
-                    {
-                        name: 'Commodities',
-                        assets: [
-                            { name: 'Gold Spot (XAU/USD)', symbol: 'OANDA:XAUUSD' },
-                            { name: 'Silver Spot (XAG/USD)', symbol: 'OANDA:XAGUSD' },
-                            { name: 'Crude Oil (USOIL)', symbol: 'TVC:USOIL' },
-                            { name: 'Natural Gas (NGAS)', symbol: 'TVC:NGAS' }
-                        ]
-                    },
-                    {
-                        name: 'Indices & Stocks',
-                        assets: [
-                            { name: 'S&P 500 Index', symbol: 'FOREXCOM:SPXUSD' },
-                            { name: 'Nasdaq 100 Index', symbol: 'INDEX:IUXX' },
-                            { name: 'Nvidia Corp (NVDA)', symbol: 'NASDAQ:NVDA' },
-                            { name: 'Apple Inc (AAPL)', symbol: 'NASDAQ:AAPL' },
-                            { name: 'Tesla Inc (TSLA)', symbol: 'NASDAQ:TSLA' }
-                        ]
-                    }
-                ];
-
-                const selectedCategory = ref('Crypto');
-                const selectedChartPair = ref('BINANCE:BTCUSDT');
-
-                const activeCategoryAssets = computed(() => {
-                    const cat = chartCategories.find(c => c.name === selectedCategory.value);
-                    return cat ? cat.assets : [];
-                });
-
-                const supabaseModalOpen = ref(false);
-                const supabaseConfig = reactive({
-                    url: localStorage.getItem('qp_sb_url') || '',
-                    anonKey: localStorage.getItem('qp_sb_key') || '',
-                    connected: false
-                });
-
-                const aiConfirmModal = reactive({
-                    show: false,
-                    engineType: null,
-                    action: 'activate',
-                    fee: 0
-                });
-
-                const sampleProof1 = "https://images.unsplash.com/photo-1544717305-2782549b5136?w=500&q=80";
-                const sampleProof2 = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&q=80";
-
-                const users = ref([
-                    {
-                        id: 'u1',
-                        name: 'Alexander Wright',
-                        email: 'alexander@quantusprime.com',
-                        phone: '+1 415 555 0199',
-                        password: 'user123',
-                        status: 'approved',
-                        isVip: true,
-                        vipRequestStatus: 'approved',
-                        dollars: 1250,
-                        yieldRate: 2.5,
-                        is18OrAbove: true,
-                        proofs: [sampleProof1, sampleProof2],
-                        bankDetails: { holderName: 'Alexander Wright', bankName: 'JPMorgan Chase', accountNumber: '987654321012', ifsc: 'CHASUS33', isSaved: true },
-                        activeAi: null
-                    },
-                    {
-                        id: 'u2',
-                        name: 'Sophia Chen',
-                        email: 'sophia@gmail.com',
-                        phone: '+1 212 555 8920',
-                        password: 'user123',
-                        status: 'pending',
-                        isVip: false,
-                        vipRequestStatus: 'none',
-                        dollars: 0,
-                        yieldRate: 1.5,
-                        is18OrAbove: true,
-                        proofs: [sampleProof1, sampleProof2],
-                        bankDetails: { holderName: '', bankName: '', accountNumber: '', ifsc: '', isSaved: false },
-                        activeAi: null
-                    }
-                ]);
-
-                const deposits = ref([
-                    {
-                        id: 'dep_1',
-                        userId: 'u1',
-                        amount: 500,
-                        fee: 30,
-                        netAmount: 470,
-                        proofScreenshot: sampleProof1,
-                        status: 'approved',
-                        timestamp: 'Today, 09:15 AM'
-                    }
-                ]);
-
-                const transactions = ref([
-                    { userId: 'u1', amount: 470, reason: 'Solana USDT Deposit Credited (Net after 6% fee)', date: 'Today, 09:15 AM' },
-                    { userId: 'u1', amount: 150, reason: 'Quantus AI Neural Arbitrage PnL', tradeAsset: 'XAU/USD', orderType: 'BUY', date: 'Yesterday' }
-                ]);
-
-                const chatMessages = ref([
-                    { id: 1, userId: 'u1', sender: 'user', text: 'Hello Quantus Admin! I submitted a Solana deposit screenshot.', time: '09:16 AM' },
-                    { id: 2, userId: 'u1', sender: 'admin', text: 'Verified! Net $455 QD credited to your portfolio balance.', time: '09:18 AM' }
-                ]);
-
-                const withdrawals = ref([]);
-
-                const loginForm = reactive({ email: '', password: '', otp: '', otpSent: false, otpHint: '' });
-                const signupForm = reactive({ name: '', email: '', phone: '', password: '', otp: '', otpSent: false, otpHint: '', proofs: [], is18OrAbove: false });
-                const depositForm = reactive({ amount: 100, screenshot: null });
-                const bankForm = reactive({ holderName: '', bankName: '', accountNumber: '', ifsc: '' });
-                const withdrawForm = reactive({ amount: 250, password: '' });
-
-                const userChatMessage = ref('');
-                const activeAdminChatUserId = ref('u1');
-                const adminReplyText = ref('');
-                const modalImageSrc = ref(null);
-                
-                const tradeModalUser = ref(null);
-                const tradeForm = reactive({ amount: 100, asset: 'XAU/USD', orderType: 'BUY', reason: '' });
-                
-                const globalYieldInput = ref(2.0);
-                const bulkStandardYieldInput = ref(3.0);
-                const bulkVipYieldInput = ref(5.0);
-
-                // FEE ENGINE CALCULATION FUNCTION (9% Total with $100 Minimum Base Rule)
-                // FEE ENGINE CALCULATION FUNCTION (6% Total with $100 Minimum Base Rule)
-                const computeFees = (grossAmount) => {
-                    const amt = grossAmount || 0;
-                    const feeBase = Math.max(amt, 100);
-                    const isMinimumRule = amt < 100;
-                    const gst = Number((feeBase * 0.03).toFixed(2));
-                    const service = Number((feeBase * 0.02).toFixed(2));
-                    const tds = Number((feeBase * 0.01).toFixed(2));
-                    const totalFee = Number((gst + service + tds).toFixed(2));
-                    const netCredited = Number(Math.max(0, amt - totalFee).toFixed(2));
-                    return { base: feeBase, gst, service, tds, totalFee, netCredited, isMinimumRule };
-                };
-
-                const depositFeeDetails = computed(() => computeFees(depositForm.amount));
-                const withdrawFeeDetails = computed(() => computeFees(withdrawForm.amount));
-
-                onMounted(() => {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    if (urlParams.get('admin') === 'true' || urlParams.get('role') === 'admin' || window.location.hash === '#admin') {
-                        currentRole.value = 'admin';
-                    }
-
-                    if (supabaseConfig.url && supabaseConfig.anonKey) {
-                        try {
-                            window.supabaseClient = supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
-                            supabaseConfig.connected = true;
-                        } catch (err) {
-                            supabaseConfig.connected = false;
-                        }
-                    }
-                });
-
-                const triggerToast = (msg, type = 'success') => {
-                    toast.message = msg;
-                    toast.type = type;
-                    toast.show = true;
-                    setTimeout(() => { toast.show = false; }, 3500);
-                };
-
-                const saveSupabaseConfig = () => {
-                    localStorage.setItem('qp_sb_url', supabaseConfig.url);
-                    localStorage.setItem('qp_sb_key', supabaseConfig.anonKey);
-                    if (supabaseConfig.url && supabaseConfig.anonKey) {
-                        try {
-                            window.supabaseClient = supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
-                            supabaseConfig.connected = true;
-                            triggerToast('Supabase Client Initialized & Connected!');
-                        } catch (e) {
-                            triggerToast('Invalid Supabase parameters', 'error');
-                        }
-                    }
-                    supabaseModalOpen.value = false;
-                };
-
-                const openSupabaseModal = () => { supabaseModalOpen.value = true; };
-
-                const currentUser = computed(() => {
-                    if (selectedUserId.value === 'guest') return null;
-                    return users.value.find(u => u.id === selectedUserId.value) || null;
-                });
-
-                const currentAiFee = computed(() => {
-                    if (!currentUser.value) return 1.5;
-                    const b = currentUser.value.dollars;
-                    if (b <= 50) return 1.5;
-                    if (b <= 100) return 2.0;
-                    if (b <= 200) return 4.0;
-                    if (b <= 500) return 8.0;
-                    if (b <= 1000) return 16.0;
-                    return 32.0;
-                });
-
-                const pendingUsers = computed(() => users.value.filter(u => u.status === 'pending'));
-                const approvedUsers = computed(() => users.value.filter(u => u.status === 'approved'));
-                const pendingDeposits = computed(() => deposits.value.filter(d => d.status === 'pending'));
-                const pendingWithdrawals = computed(() => withdrawals.value.filter(w => w.status === 'pending'));
-                const pendingVipRequests = computed(() => users.value.filter(u => u.vipRequestStatus === 'pending'));
-
-                const userDeposits = computed(() => {
-                    if (!currentUser.value) return [];
-                    return deposits.value.filter(d => d.userId === currentUser.value.id);
-                });
-
-                const userTransactions = computed(() => {
-                    if (!currentUser.value) return [];
-                    return transactions.value.filter(t => t.userId === currentUser.value.id);
-                });
-
-                const currentUserChatMessages = computed(() => {
-                    if (!currentUser.value) return [];
-                    return chatMessages.value.filter(m => m.userId === currentUser.value.id);
-                });
-
-                const activeAdminChatUser = computed(() => users.value.find(u => u.id === activeAdminChatUserId.value));
-                const activeChatMessages = computed(() => chatMessages.value.filter(m => m.userId === activeAdminChatUserId.value));
-
-                const navigateToTab = (tab) => {
-                    currentUserTab.value = tab;
-                    drawerOpen.value = false;
-                };
-
-                const switchToAdminMode = () => {
-                    currentRole.value = 'admin';
-                    drawerOpen.value = false;
-                    triggerToast('Accessed Quantus Admin Console', 'info');
-                };
-
-                const switchToUserMode = () => {
-                    currentRole.value = 'user';
-                    triggerToast('Returned to Investor View', 'info');
-                };
-
-                const onUserSelectChange = () => {
-                    authScreenOpen.value = false;
-                    if (currentUser.value && currentUser.value.bankDetails) {
-                        bankForm.holderName = currentUser.value.bankDetails.holderName || '';
-                        bankForm.bankName = currentUser.value.bankDetails.bankName || '';
-                        bankForm.accountNumber = currentUser.value.bankDetails.accountNumber || '';
-                        bankForm.ifsc = currentUser.value.bankDetails.ifsc || '';
-                    }
-                };
-
-                const copySolanaAddress = () => {
-                    navigator.clipboard.writeText(solanaWalletAddress.value);
-                    triggerToast('Solana SPL Wallet Address copied to clipboard!');
-                };
-
-                const sendOtp = (type) => {
-                    const code = Math.floor(100000 + Math.random() * 900000).toString();
-                    if (type === 'login') {
-                        loginForm.otpSent = true;
-                        loginForm.otpHint = `Demo Code: ${code}`;
-                    } else {
-                        signupForm.otpSent = true;
-                        signupForm.otpHint = `Demo Code: ${code}`;
-                    }
-                    triggerToast(`2FA OTP Transmitted: ${code}`, 'info');
-                };
-
-                const handleLogin = () => {
-                    const found = users.value.find(u => u.email.toLowerCase() === loginForm.email.toLowerCase());
-                    if (found) {
-                        selectedUserId.value = found.id;
-                        onUserSelectChange();
-                        triggerToast(`Authenticated as ${found.name}`);
-                    } else {
-                        triggerToast('User account not found', 'error');
-                    }
-                };
-
-                const handleProofUpload = (e) => {
-                    const files = Array.from(e.target.files);
-                    if (signupForm.proofs.length + files.length > 3) {
-                        triggerToast('Maximum 3 proof photos permitted', 'error');
-                        return;
-                    }
-                    files.forEach(file => {
-                        const reader = new FileReader();
-                        reader.onload = (event) => { signupForm.proofs.push(event.target.result); };
-                        reader.readAsDataURL(file);
-                    });
-                };
-
-                const removeProof = (idx) => { signupForm.proofs.splice(idx, 1); };
-
-                const handleDepositScreenshotUpload = (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => { depositForm.screenshot = event.target.result; };
-                        reader.readAsDataURL(file);
-                    }
-                };
-
-                const submitDepositRequest = () => {
-                    if (!depositForm.amount || depositForm.amount <= 0) {
-                        triggerToast('Please enter a valid deposit amount', 'error');
-                        return;
-                    }
-                    if (!depositForm.screenshot) {
-                        triggerToast('Please attach payment screenshot proof', 'error');
-                        return;
-                    }
-
-                    const fees = depositFeeDetails.value;
-
-                    deposits.value.unshift({
-                        id: 'dep_' + Date.now(),
-                        userId: currentUser.value.id,
-                        amount: depositForm.amount,
-                        fee: fees.totalFee,
-                        netAmount: fees.netCredited,
-                        proofScreenshot: depositForm.screenshot,
-                        status: 'pending',
-                        timestamp: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    });
-
-                    depositForm.screenshot = null;
-                    triggerToast('Solana Deposit Request submitted for Admin Verification!');
-                };
-
-                const handleSignupSubmit = () => {
-                    if (signupForm.proofs.length < 2) {
-                        triggerToast('Please upload at least 2 verification proof photos', 'error');
-                        return;
-                    }
-                    if (!signupForm.is18OrAbove) {
-                        triggerToast('You must confirm that you are 18 years of age or older', 'error');
-                        return;
-                    }
-                    const newId = 'u' + (users.value.length + 1);
-                    const newUser = {
-                        id: newId,
-                        name: signupForm.name,
-                        email: signupForm.email,
-                        phone: signupForm.phone,
-                        password: signupForm.password || 'user123',
-                        status: 'pending',
-                        isVip: false,
-                        vipRequestStatus: 'none',
-                        dollars: 0,
-                        yieldRate: 2.0,
-                        is18OrAbove: signupForm.is18OrAbove,
-                        proofs: [...signupForm.proofs],
-                        bankDetails: { holderName: '', bankName: '', accountNumber: '', ifsc: '', isSaved: false },
-                        activeAi: null
-                    };
-                    users.value.push(newUser);
-                    selectedUserId.value = newId;
-                    authScreenOpen.value = false;
-                    triggerToast('Submitted for Compliance Verification!', 'success');
-                };
-
-                const approveUser = (id) => {
-                    const u = users.value.find(user => user.id === id);
-                    if (u) {
-                        u.status = 'approved';
-                        u.dollars = 100;
-                        transactions.value.unshift({ userId: id, amount: 100, reason: 'Account Approved (+100 $QD Welcome)', date: 'Today' });
-                        triggerToast(`Approved ${u.name}! +$100 QD credited.`);
-                    }
-                };
-
-                const rejectUser = (id) => {
-                    const u = users.value.find(user => user.id === id);
-                    if (u) { u.status = 'rejected'; triggerToast(`Verification declined for ${u.name}`, 'error'); }
-                };
-
-                const approveDeposit = (depId) => {
-                    const dep = deposits.value.find(d => d.id === depId);
-                    if (dep) {
-                        dep.status = 'approved';
-                        const u = users.value.find(user => user.id === dep.userId);
-                        if (u) {
-                            u.dollars += dep.netAmount;
-                            transactions.value.unshift({
-                                userId: u.id,
-                                amount: dep.netAmount,
-                                reason: `Solana Deposit Approved (Net $${dep.netAmount} QD after 6% fees)`,
-                                date: 'Today'
-                            });
-                        }
-                        triggerToast(`Approved Deposit & Credited Net $${dep.netAmount} QD!`);
-                    }
-                };
-
-                const rejectDeposit = (depId) => {
-                    const dep = deposits.value.find(d => d.id === depId);
-                    if (dep) {
-                        dep.status = 'rejected';
-                        triggerToast('Deposit request rejected', 'error');
-                    }
-                };
-
-                const requestVipAccess = () => {
-                    if (!currentUser.value) return;
-                    currentUser.value.vipRequestStatus = 'pending';
-                    triggerToast('VIP Access Request transmitted to Quantus Admin Panel!');
-                };
-
-                const approveVipUser = (userId) => {
-                    const u = users.value.find(user => user.id === userId);
-                    if (u) {
-                        u.isVip = true;
-                        u.vipRequestStatus = 'approved';
-                        triggerToast(`Granted VIP Approval to ${u.name}!`);
-                    }
-                };
-
-                const rejectVipUser = (userId) => {
-                    const u = users.value.find(user => user.id === userId);
-                    if (u) {
-                        u.vipRequestStatus = 'rejected';
-                        triggerToast(`Declined VIP Request for ${u.name}`, 'error');
-                    }
-                };
-
-                const requestAiToggle = (engineType) => {
-                    if (!currentUser.value) return;
-
-                    if (engineType === 'vip' && !currentUser.value.isVip) {
-                        triggerToast('Quantus VIP Neural AI is locked! Requires Admin VIP Approval.', 'error');
-                        return;
-                    }
-
-                    if (currentUser.value.activeAi === engineType) {
-                        aiConfirmModal.engineType = engineType;
-                        aiConfirmModal.action = 'deactivate';
-                        aiConfirmModal.fee = 0;
-                        aiConfirmModal.show = true;
-                        return;
-                    }
-
-                    const fee = engineType === 'vip' ? currentAiFee.value * 2 : currentAiFee.value;
-                    if (currentUser.value.dollars < fee) {
-                        triggerToast(`Insufficient $QD balance for activation ($${fee} QD required)`, 'error');
-                        return;
-                    }
-
-                    aiConfirmModal.engineType = engineType;
-                    aiConfirmModal.action = 'activate';
-                    aiConfirmModal.fee = fee;
-                    aiConfirmModal.show = true;
-                };
-
-                const confirmAiToggle = () => {
-                    if (!currentUser.value) return;
-                    const engineType = aiConfirmModal.engineType;
-
-                    if (aiConfirmModal.action === 'deactivate') {
-                        currentUser.value.activeAi = null;
-                        triggerToast(`Quantus ${engineType.toUpperCase()} Engine Deactivated`, 'info');
-                    } else {
-                        const fee = aiConfirmModal.fee;
-                        currentUser.value.dollars -= fee;
-                        currentUser.value.activeAi = engineType;
-
-                        const botTitle = engineType === 'vip' ? 'Quantus VIP Neural Engine (35-40%)' : 'Quantus Standard AI Engine (25-30%)';
-                        transactions.value.unshift({
-                            userId: currentUser.value.id,
-                            amount: -fee,
-                            reason: `${botTitle} Activated - Tier Activation Fee`,
-                            date: 'Today'
-                        });
-
-                        triggerToast(`${botTitle} Activated! Deducted $${fee} QD`);
-                    }
-
-                    aiConfirmModal.show = false;
-                };
-
-                const applyAiModelYield = (modelType) => {
-                    const rate = modelType === 'vip' ? bulkVipYieldInput.value : bulkStandardYieldInput.value;
-                    users.value.filter(u => u.activeAi === modelType).forEach(u => {
-                        u.yieldRate = rate;
-                        if (u.status === 'approved' && u.dollars > 0) {
-                            const add = Math.round((u.dollars * (rate / 100)));
-                            if (add !== 0) {
-                                u.dollars += add;
-                                transactions.value.unshift({
-                                    userId: u.id,
-                                    amount: add,
-                                    reason: `${modelType.toUpperCase()} AI Engine Daily PnL (${rate >= 0 ? '+' : ''}${rate}%)`,
-                                    date: 'Today'
-                                });
-                            }
-                        }
-                    });
-                    triggerToast(`Applied ${rate}% yield to all ${modelType.toUpperCase()} AI running accounts!`);
-                };
-
-                const applyGlobalYield = () => {
-                    const rate = globalYieldInput.value;
-                    users.value.forEach(u => {
-                        u.yieldRate = rate;
-                        if (u.status === 'approved' && u.dollars > 0) {
-                            const add = Math.round((u.dollars * (rate / 100)));
-                            if (add !== 0) {
-                                u.dollars += add;
-                                transactions.value.unshift({
-                                    userId: u.id,
-                                    amount: add,
-                                    reason: `Global Yield Adjustment (${rate >= 0 ? '+' : ''}${rate}%)`,
-                                    date: 'Today'
-                                });
-                            }
-                        }
-                    });
-                    triggerToast(`Global Daily Yield Rate adjusted to ${rate}% across all accounts!`);
-                };
-
-                const saveBankDetails = () => {
-                    if (!bankForm.holderName || !bankForm.accountNumber || !bankForm.bankName) {
-                        triggerToast('Please complete required bank details', 'error');
-                        return;
-                    }
-                    currentUser.value.bankDetails = {
-                        holderName: bankForm.holderName,
-                        bankName: bankForm.bankName,
-                        accountNumber: bankForm.accountNumber,
-                        ifsc: bankForm.ifsc,
-                        isSaved: true
-                    };
-                    triggerToast('Bank account saved successfully!');
-                };
-
-                const handleWithdrawalSubmit = () => {
-                    if (!currentUser.value.bankDetails || !currentUser.value.bankDetails.isSaved) {
-                        triggerToast('Please configure your Bank Details first', 'error');
-                        return;
-                    }
-                    if (withdrawForm.amount <= 0 || withdrawForm.amount > currentUser.value.dollars) {
-                        triggerToast('Invalid withdrawal amount', 'error');
-                        return;
-                    }
-                    if (withdrawForm.password !== currentUser.value.password) {
-                        triggerToast('Authentication Failed: Incorrect Password!', 'error');
-                        return;
-                    }
-
-                    const fees = withdrawFeeDetails.value;
-
-                    currentUser.value.dollars -= withdrawForm.amount;
-                    withdrawals.value.unshift({
-                        id: Date.now(),
-                        userId: currentUser.value.id,
-                        amount: withdrawForm.amount,
-                        fee: fees.totalFee,
-                        netAmount: fees.netCredited,
-                        bankInfo: { ...currentUser.value.bankDetails },
-                        status: 'pending'
-                    });
-
-                    transactions.value.unshift({
-                        userId: currentUser.value.id,
-                        amount: -withdrawForm.amount,
-                        reason: `Withdrawal Transmitted (Gross $${withdrawForm.amount}, Net $${fees.netCredited} QD to ${currentUser.value.bankDetails.bankName})`,
-                        date: 'Today'
-                    });
-
-                    withdrawForm.password = '';
-                    triggerToast('Withdrawal Order Transmitted!');
-                };
-
-                const processWithdrawal = (wId) => {
-                    const w = withdrawals.value.find(item => item.id === wId);
-                    if (w) {
-                        w.status = 'approved';
-                        triggerToast('Withdrawal Net Wire Transfer Completed!');
-                    }
-                };
-
-                const openTradeExecutionModal = (u) => {
-                    tradeModalUser.value = u;
-                    tradeForm.amount = 150;
-                    tradeForm.asset = 'XAU/USD';
-                    tradeForm.orderType = 'BUY';
-                    tradeForm.reason = 'Quantus AI Neural Arbitrage PnL';
-                };
-
-                const confirmTradeExecution = () => {
-                    if (!tradeModalUser.value) return;
-                    const u = tradeModalUser.value;
-                    u.dollars += tradeForm.amount;
-                    
-                    transactions.value.unshift({
-                        userId: u.id,
-                        amount: tradeForm.amount,
-                        reason: tradeForm.reason || 'Quantitative Trade Execution PnL',
-                        tradeAsset: tradeForm.asset,
-                        orderType: tradeForm.orderType,
-                        date: 'Today'
-                    });
-
-                    triggerToast(`Executed ${tradeForm.asset} ${tradeForm.orderType} trade PnL (${tradeForm.amount > 0 ? '+' : ''}$${tradeForm.amount} QD) for ${u.name}!`);
-                    tradeModalUser.value = null;
-                };
-
-                const adjustDollars = (userId, amount, reason) => {
-                    const u = users.value.find(user => user.id === userId);
-                    if (u) {
-                        u.dollars += amount;
-                        transactions.value.unshift({ userId: userId, amount: amount, reason: reason, date: 'Today' });
-                        triggerToast(`Updated ${u.name}'s balance by ${amount > 0 ? '+' : ''}$${amount} QD!`);
-                    }
-                };
-
-                const sendUserMessage = () => {
-                    if (!userChatMessage.value.trim() || !currentUser.value) return;
-                    chatMessages.value.push({
-                        id: Date.now(),
-                        userId: currentUser.value.id,
-                        sender: 'user',
-                        text: userChatMessage.value,
-                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    });
-                    userChatMessage.value = '';
-                };
-
-                const sendAdminReply = () => {
-                    if (!adminReplyText.value.trim() || !activeAdminChatUserId.value) return;
-                    chatMessages.value.push({
-                        id: Date.now(),
-                        userId: activeAdminChatUserId.value,
-                        sender: 'admin',
-                        text: adminReplyText.value,
-                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    });
-                    adminReplyText.value = '';
-                };
-
-                const openImageModal = (src) => { modalImageSrc.value = src; };
-                const getUserName = (userId) => {
-                    const u = users.value.find(user => user.id === userId);
-                    return u ? u.name : 'Investor';
-                };
-
-                return {
-                    currentRole,
-                    selectedUserId,
-                    currentUserTab,
-                    currentAdminTab,
-                    drawerOpen,
-                    authScreenOpen,
-                    authTab,
-                    toast,
-                    solanaWalletAddress,
-                    chartCategories,
-                    selectedCategory,
-                    selectedChartPair,
-                    activeCategoryAssets,
-                    supabaseModalOpen,
-                    supabaseConfig,
-                    aiConfirmModal,
-                    users,
-                    deposits,
-                    currentUser,
-                    currentAiFee,
-                    pendingUsers,
-                    approvedUsers,
-                    pendingDeposits,
-                    pendingWithdrawals,
-                    pendingVipRequests,
-                    userDeposits,
-                    userTransactions,
-                    loginForm,
-                    signupForm,
-                    depositForm,
-                    bankForm,
-                    withdrawForm,
-                    userChatMessage,
-                    currentUserChatMessages,
-                    activeAdminChatUserId,
-                    activeAdminChatUser,
-                    activeChatMessages,
-                    adminReplyText,
-                    modalImageSrc,
-                    tradeModalUser,
-                    tradeForm,
-                    globalYieldInput,
-                    bulkStandardYieldInput,
-                    bulkVipYieldInput,
-                    depositFeeDetails,
-                    withdrawFeeDetails,
-                    navigateToTab,
-                    switchToAdminMode,
-                    switchToUserMode,
-                    onUserSelectChange,
-                    copySolanaAddress,
-                    saveSupabaseConfig,
-                    openSupabaseModal,
-                    sendOtp,
-                    handleLogin,
-                    handleProofUpload,
-                    removeProof,
-                    handleDepositScreenshotUpload,
-                    submitDepositRequest,
-                    handleSignupSubmit,
-                    approveUser,
-                    rejectUser,
-                    approveDeposit,
-                    rejectDeposit,
-                    requestVipAccess,
-                    approveVipUser,
-                    rejectVipUser,
-                    requestAiToggle,
-                    confirmAiToggle,
-                    applyAiModelYield,
-                    applyGlobalYield,
-                    saveBankDetails,
-                    handleWithdrawalSubmit,
-                    processWithdrawal,
-                    openTradeExecutionModal,
-                    confirmTradeExecution,
-                    adjustDollars,
-                    sendUserMessage,
-                    sendAdminReply,
-                    openImageModal,
-                    getUserName
-                };
-            }
-        }).mount('#app');
-    </script>
-</body>
-</html>
+                <p class="text-xs text-s
