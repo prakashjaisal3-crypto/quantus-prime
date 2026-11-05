@@ -1747,7 +1747,7 @@
                     const u = users.value.find(user => user.id === id);
                     if (u) {
                         u.status = 'approved';
-                        u.dollars = 100;
+                        u.dollars = 0;
                         transactions.value.unshift({ userId: id, amount: 100, reason: 'Account Approved (+100 $QD Welcome)', date: 'Today' });
                         triggerToast(`Approved ${u.name}! +$100 $QD credited.`);
                     }
