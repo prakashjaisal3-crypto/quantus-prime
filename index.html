@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en" class="dark h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantus Prime | Institutional Quantitative Assets</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: {
+                            950: '#030712',
+                            900: '#090D16',
+                            850: '#0F172A',
+                            800: '#11192E',
+                            700: '#1E293B'
+                        },
+                        cyberCyan: '#00F0FF',
+                        goldAccent: '#F59E0B',
+                        emeraldYield: '#10B981'
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome 6.4.0 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Vue 3 Global Build -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <style>
+        [v-cloak] { display: none !important; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #F8FAFC;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(0, 240, 255, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 85%, rgba(16, 185, 129, 0.05) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.03) 0%, transparent 60%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        .font-mono-num { font-family: 'JetBrains Mono', monospace; }
+        .font-cinzel-title { font-family: 'Cinzel', serif; }
+
+        .glass-panel {
+            background: rgba(9, 13, 22, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.6);
+        }
+        
+        .glass-panel-cyan {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.08) 0%, rgba(9, 13, 22, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            box-shadow: 0 0 45px rgba(0, 240, 255, 0.08);
+        }
+
+        .glass-panel-emerald {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(9, 13, 22, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            box-shadow: 0 0 45px rgba(16, 185, 129, 0.08);
+        }
+
+        .glass-input {
+            background: rgba(3, 7, 18, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #F8FAFC;
+            transition: all 0.25s ease;
+        }
+        .glass-input:focus {
+            border-color: #00F0FF;
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+        }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00F0FF; }
+
+        .cyan-glow { text-shadow: 0 0 16px rgba(0, 240, 255, 0.65); }
+
+        .quantus-shimmer {
+            background: linear-gradient(90deg, #00F0FF 0%, #10B981 50%, #FBBF24 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            animation: shine 6s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+    </style>
+</head>
+<body class="antialiased min-h-screen selection:bg-cyan-500 selection:text-obsidian-950 flex flex-col">
+
+    <div id="app" class="min-h-screen flex flex-col relative" v-cloak>
+
+        <!-- GLOBAL TOAST NOTIFICATION -->
+        <div v-if="toast.show" 
+             class="fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl transition-all duration-300 backdrop-blur-xl border font-mono-num"
+             :class="toast.type === 'error' ? 'bg-rose-950/90 text-rose-300 border-rose-500/40' : 'bg-emerald-950/90 text-emerald-300 border-emerald-500/40'">
+            <i class="fas" :class="toast.type === 'error' ? 'fa-triangle-exclamation text-rose-400' : 'fa-circle-check text-emerald-400'"></i>
+            <span class="text-xs font-semibold tracking-wide">{{ toast.message }}</span>
+            <button @click="toast.show = false" class="ml-2 text-slate-400 hover:text-white">
+                <i class="fas fa-times text-xs"></i>
+            </button>
+        </div>
+
+        <!-- 1. TICKER STRIP -->
+        <div class="bg-obsidian-950 border-b border-slate-800 px-4 py-1.5 text-[11px] font-mono-num flex items-center justify-between text-slate-400 overflow-x-auto whitespace-nowrap z-40">
+            <div class="flex items-center gap-6">
+                <span class="flex items-center gap-1.5 text-emerald-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <strong class="text-white font-sans">QUANTUS DESK LIVE</strong>
+                </span>
+                <span>SOL/USDT: <strong class="text-white">$194.20</strong> <span class="text-emerald-400">+4.8%</span></span>
+                <span>USDT/QD: <strong class="text-white">1.0000</strong> <span class="text-cyan-400">1 USDT = 1 $QD</span></span>
+                <span>FEE BASE: <strong class="text-amber-400">6% Statutory Engine (3% GST + 2% Service + 1% TDS)</strong></span>
+            </div>
+            <div class="flex items-center gap-4 text-[10px] font-sans">
+                <span class="text-emerald-400 font-bold flex items-center gap-1">
+                    <i class="fas fa-database"></i> Supabase Synchronized
+                </span>
+                <span class="text-slate-500">HQ: Singapore (Est. 2018)</span>
+            </div>
+        </div>
+
+        <!-- 2. BRAND HEADER BAR -->
+        <header class="bg-obsidian-900/90 border-b border-slate-800/80 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <button v-if="currentUser && currentUser.status === 'approved' && !isAdminLoggedIn" 
+                        @click="drawerOpen = !drawerOpen" 
+                        class="p-2.5 bg-obsidian-950 hover:bg-slate-800 border border-slate-700/80 text-cyan-400 rounded-xl transition flex items-center justify-center shadow-md">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+
+                <div class="flex items-center gap-3 cursor-pointer" @click="handleLogoClick">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-emerald-500 to-amber-400 flex items-center justify-center text-lg shadow-lg text-obsidian-950 font-black">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-black tracking-wider font-cinzel-title quantus-shimmer uppercase">Quantus Prime</span>
+                        <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Institutional Assets</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Controls -->
+            <div class="flex items-center gap-4">
+                <div v-if="currentUser && currentUser.status === 'approved' && !isAdminLoggedIn" 
+                     class="flex items-center gap-3 glass-panel-cyan px-4 py-1.5 rounded-full shadow-lg cursor-pointer"
+                     @click="currentUserTab = 'wallet'">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center text-obsidian-950 text-xs font-black">
+                        $
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[9px] uppercase font-black tracking-widest text-cyan-400 leading-none">Portfolio Balance</span>
+                        <span class="text-sm font-black text-white font-mono-num leading-tight cyan-glow">
+                            ${{ (currentUser.dollars || 0).toLocaleString() }} <span class="text-[10px] text-cyan-400 font-sans">$QD</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div v-if="currentUser && !isAdminLoggedIn">
+                    <button @click="logout" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-mono-num rounded-xl transition flex items-center gap-1.5">
+                        <i class="fas fa-power-off text-rose-400"></i> Logout
+                    </button>
+                </div>
+
+                <div v-if="isAdminLoggedIn" class="flex items-center gap-3">
+                    <span class="px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-full text-xs font-black uppercase font-mono-num">
+                        Master Admin Console
+                    </span>
+                    <button @click="isAdminLoggedIn = false" class="px-3 py-1.5 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl font-mono-num hover:bg-slate-700">
+                        Exit Admin
+                    </button>
+                </div>
+
+                <button v-if="!currentUser && !isAdminLoggedIn" @click="showAdminAuthModal = true" class="text-xs text-slate-500 hover:text-cyan-400 font-mono-num transition">
+                    #admin
+                </button>
+            </div>
+        </header>
+
+        <!-- 3. SLIDE-OUT DRAWER MENU -->
+        <div v-if="drawerOpen && currentUser && currentUser.status === 'approved' && !isAdminLoggedIn" 
+             class="fixed inset-0 z-50 flex" @click="drawerOpen = false">
+            <div class="fixed inset-0 bg-black/80 backdrop-blur-md"></div>
+            <div class="relative w-80 max-w-[85vw] bg-obsidian-950 border-r border-slate-800 h-full p-6 flex flex-col justify-between shadow-2xl z-10" @click.stop>
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-500 flex items-center justify-center text-obsidian-950 font-black text-sm">
+                                <i class="fas fa-gem"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-sm text-white font-cinzel-title uppercase">Quantus Desk</h3>
+                                <span class="text-[9px] text-cyan-400 font-bold block uppercase tracking-widest">Navigation Center</span>
+                            </div>
+                        </div>
+                        <button @click="drawerOpen = false" class="p-2 text-slate-400 hover:text-white transition">
+                            <i class="fas fa-times text-base"></i>
+                        </button>
+                    </div>
+
+                    <nav class="space-y-2 font-mono-num">
+                        <button @click="currentUserTab = 'dashboard'; drawerOpen = false" 
+                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
+                                :class="currentUserTab === 'dashboard' ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
+                            <span class="flex items-center gap-3"><i class="fas fa-chart-pie text-sm text-cyan-400"></i>Portfolio Overview</span>
+                        </button>
+
+                        <button @click="currentUserTab = 'deposit'; drawerOpen = false" 
+                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
+                                :class="currentUserTab === 'deposit' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
+                            <span class="flex items-center gap-3"><i class="fas fa-qrcode text-sm text-emerald-400"></i>Solana USDT Deposit</span>
+                        </button>
+
+                        <button @click="currentUserTab = 'ai'; drawerOpen = false" 
+                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
+                                :class="currentUserTab === 'ai' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
+                            <span class="flex items-center gap-3"><i class="fas fa-microchip text-sm text-amber-400"></i>Quantus AI Engines</span>
+                        </button>
+
+                        <button @click="currentUserTab = 'bank'; drawerOpen = false" 
+                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
+                                :class="currentUserTab === 'bank' ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
+                            <span class="flex items-center gap-3"><i class="fas fa-building-columns text-sm text-cyan-400"></i>Bank & Withdrawals</span>
+                        </button>
+
+                        <button @click="currentUserTab = 'wallet'; drawerOpen = false" 
+                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
+                                :class="currentUserTab === 'wallet' ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
+                            <span class="flex items-center gap-3"><i class="fas fa-wallet text-sm text-cyan-400"></i>Quantus Ledger ($QD)</span>
+                        </button>
+
+                        <button @click="currentUserTab = 'charts'; drawerOpen = false" 
+                                class="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition"
+                                :class="currentUserTab === 'charts' ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/40 shadow-lg' : 'text-slate-300 hover:bg-slate-900'">
+                            <span class="flex items-center gap-3"><i class="fas fa-chart-line text-sm text-cyan-400"></i>TradingView Live Charts</span>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN NAVIGATION BAR -->
+        <nav v-if="isAdminLoggedIn" class="bg-obsidian-950 border-b border-rose-500/30 px-4 sm:px-8 py-2 sticky top-[65px] z-20 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto font-mono-num">
+                <button @click="adminTab = 'kyc'" class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
+                        :class="adminTab === 'kyc' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'text-slate-400 hover:bg-slate-900'">
+                    <i class="fas fa-user-check"></i>KYC Approvals Desk ({{ pendingKycUsers.length }})
+                </button>
+                <button @click="adminTab = 'deposits'" class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
+                        :class="adminTab === 'deposits' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'text-slate-400 hover:bg-slate-900'">
+                    <i class="fas fa-qrcode"></i>Deposit Approvals Desk ({{ pendingDeposits.length }})
+                </button>
+                <button @click="adminTab = 'withdrawals'" class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
+                        :class="adminTab === 'withdrawals' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'text-slate-400 hover:bg-slate-900'">
+                    <i class="fas fa-money-bill-transfer"></i>Withdrawals & Log Editor ({{ withdrawals.length }})
+                </button>
+                <button @click="adminTab = 'trade_pnl'" class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
+                        :class="adminTab === 'trade_pnl' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'text-slate-400 hover:bg-slate-900'">
+                    <i class="fas fa-sliders"></i>Trade & AI Yield Engine
+                </button>
+                <button @click="adminTab = 'users'" class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap"
+                        :class="adminTab === 'users' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40' : 'text-slate-400 hover:bg-slate-900'">
+                    <i class="fas fa-users-gear"></i>User Accounts Control
+                </button>
+            </div>
+        </nav>
+
+        <!-- MAIN WORKSPACE -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+            <!-- AUTH SCREEN (FOR UNAUTHENTICATED USERS) -->
+            <div v-if="!currentUser && !isAdminLoggedIn" class="max-w-xl mx-auto my-6">
+                <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden border border-cyan-500/20">
+                    <div class="text-center mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 via-emerald-500 to-amber-400 mx-auto flex items-center justify-center text-2xl text-obsidian-950 font-black mb-3 shadow-lg">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <h2 class="text-2xl font-black font-cinzel-title text-white uppercase tracking-tight quantus-shimmer">Quantus Prime Portal</h2>
+                        <p class="text-xs text-slate-400 mt-1 font-mono-num">Institutional Access & Verification Gateway</p>
+                    </div>
+
+                    <!-- TAB SELECTOR -->
+                    <div class="flex bg-obsidian-950 p-1 rounded-2xl border border-slate-800 mb-6 font-mono-num">
+                        <button @click="authTab = 'login'" class="flex-1 py-3 rounded-xl text-xs font-bold transition"
+                                :class="authTab === 'login' ? 'bg-slate-800 text-cyan-400 shadow' : 'text-slate-400 hover:text-white'">
+                            CLIENT LOGIN
+                        </button>
+                        <button @click="authTab = 'signup'" class="flex-1 py-3 rounded-xl text-xs font-bold transition"
+                                :class="authTab === 'signup' ? 'bg-slate-800 text-cyan-400 shadow' : 'text-slate-400 hover:text-white'">
+                            INSTITUTIONAL SIGNUP
+                        </button>
+                    </div>
+
+                    <!-- CLIENT LOGIN -->
+                    <form v-if="authTab === 'login'" @submit.prevent="handleLogin" class="space-y-4 font-mono-num">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Corporate Email Address</label>
+                            <input v-model="loginForm.email" type="email" required placeholder="investor@domain.com" class="w-full glass-input rounded-xl px-4 py-3 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Password</label>
+                            <input v-model="loginForm.password" type="password" required placeholder="••••••••" class="w-full glass-input rounded-xl px-4 py-3 text-xs">
+                        </div>
+                        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-xl shadow-lg hover:opacity-95 transition">
+                            ACCESS TRADING PORTAL
+                        </button>
+                    </form>
+
+                    <!-- INSTITUTIONAL SIGNUP WITH MULTI-IMAGE PICKER -->
+                    <form v-if="authTab === 'signup'" @submit.prevent="handleSignup" class="space-y-4 font-mono-num">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Full Legal Name</label>
+                            <input v-model="signupForm.name" type="text" required placeholder="Alexander Wright" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs font-sans">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Email Address</label>
+                                <input v-model="signupForm.email" type="email" required placeholder="john@domain.com" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Phone Number</label>
+                                <input v-model="signupForm.phone" type="tel" required placeholder="+91 9876543210" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Password</label>
+                            <input v-model="signupForm.password" type="password" required placeholder="••••••••" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs">
+                        </div>
+
+                        <!-- MULTI-PHOTO UPLOAD ZONE -->
+                        <div class="bg-obsidian-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs text-cyan-400 font-semibold">
+                                    <i class="fas fa-id-card mr-1"></i> COMPLIANCE PROOF DOCUMENTS (2-3 PHOTOS)
+                                </label>
+                                <span class="text-[10px] font-bold" :class="signupForm.proofs.length >= 2 ? 'text-emerald-400' : 'text-slate-400'">
+                                    {{ signupForm.proofs.length }}/3 Uploaded
+                                </span>
+                            </div>
+                            <div class="border-2 border-dashed border-slate-700 hover:border-cyan-500/60 bg-obsidian-900/60 rounded-xl p-3 text-center cursor-pointer transition"
+                                 @click="$refs.fileInput.click()">
+                                <input type="file" ref="fileInput" multiple accept="image/*" class="hidden" @change="handleProofUpload">
+                                <i class="fas fa-cloud-arrow-up text-xl text-cyan-400 mb-1"></i>
+                                <p class="text-[11px] text-slate-300">Click to Select 2 to 3 Proof Photos</p>
+                            </div>
+                            <div v-if="signupForm.proofs.length > 0" class="grid grid-cols-3 gap-2 mt-2">
+                                <div v-for="(img, idx) in signupForm.proofs" :key="idx" class="relative rounded-lg overflow-hidden aspect-square border border-slate-700">
+                                    <img :src="img" class="w-full h-full object-cover">
+                                    <button type="button" @click.stop="removeProof(idx)" class="absolute top-1 right-1 w-4 h-4 bg-rose-600 text-white rounded-full flex items-center justify-center text-[9px]">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 pt-1">
+                            <input type="checkbox" id="ageCheck" v-model="signupForm.is18OrAbove" required class="w-4 h-4 rounded bg-obsidian-950 border-slate-800 text-cyan-400">
+                            <label for="ageCheck" class="text-xs text-slate-300">
+                                I confirm that I am <strong class="text-cyan-400">18 years of age or older</strong>.
+                            </label>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-xl shadow-lg hover:opacity-95 transition">
+                            SUBMIT APPLICATION
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- PENDING REVIEW SCREEN -->
+            <div v-if="currentUser && currentUser.status === 'pending' && !isAdminLoggedIn" class="max-w-xl mx-auto my-8">
+                <div class="glass-panel rounded-3xl p-8 text-center space-y-4 border border-amber-500/30">
+                    <div class="w-16 h-16 mx-auto bg-amber-500/20 border border-amber-500/40 rounded-2xl flex items-center justify-center text-3xl text-amber-400">
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+                    <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-black uppercase tracking-widest rounded-full inline-block font-mono-num">
+                        COMPLIANCE REVIEW IN PROGRESS
+                    </span>
+                    <h2 class="text-2xl font-black text-white font-cinzel-title">ACCOUNT UNDER REVIEW</h2>
+                    <p class="text-xs text-slate-300 max-w-md mx-auto leading-relaxed font-mono-num">
+                        Welcome <strong class="text-cyan-400">{{ currentUser.name }}</strong>. Your registration details and identity proof documents have been submitted to Master Admin for KYC verification.
+                    </p>
+                </div>
+            </div>
+
+            <!-- REJECTED SCREEN -->
+            <div v-if="currentUser && currentUser.status === 'rejected' && !isAdminLoggedIn" class="max-w-xl mx-auto my-8">
+                <div class="glass-panel rounded-3xl p-8 text-center space-y-4 border border-rose-500/40">
+                    <div class="w-16 h-16 mx-auto bg-rose-500/20 border border-rose-500/40 rounded-2xl flex items-center justify-center text-3xl text-rose-400">
+                        <i class="fas fa-user-xmark"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-white font-cinzel-title">APPLICATION DECLINED</h2>
+                    <p class="text-xs text-slate-300 max-w-md mx-auto leading-relaxed font-mono-num">
+                        Your application was not approved. You can logout and submit a fresh application with valid details.
+                    </p>
+                    <button @click="logout" class="px-5 py-2.5 bg-rose-600 text-white font-bold text-xs rounded-xl font-mono-num">
+                        Logout & Re-apply
+                    </button>
+                </div>
+            </div>
+
+            <!-- APPROVED USER PORTAL -->
+            <div v-if="currentUser && currentUser.status === 'approved' && !isAdminLoggedIn" class="space-y-6">
+
+                <!-- TAB 1: DASHBOARD -->
+                <div v-if="currentUserTab === 'dashboard'" class="space-y-6">
+                    <div class="glass-panel-cyan rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-cyan-500/30">
+                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                            <div class="space-y-2">
+                                <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase tracking-widest rounded-full inline-block font-mono-num">
+                                    <i class="fas fa-shield-check mr-1"></i> VERIFIED INSTITUTIONAL DESK
+                                </span>
+                                <h1 class="text-2xl sm:text-3xl font-black text-white font-cinzel-title">
+                                    WELCOME, <span class="quantus-shimmer">{{ currentUser.name.toUpperCase() }}</span>
+                                    <span v-if="currentUser.isVip" class="ml-2 text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full font-black font-mono-num">VIP MEMBER</span>
+                                </h1>
+                                <p class="text-xs text-slate-300 font-mono-num">
+                                    Portfolio ID: {{ currentUser.id }} | Stat Fee: 6% Engine Active
+                                </p>
+                            </div>
+
+                            <div class="glass-panel p-5 rounded-2xl flex items-center gap-4 w-full md:w-auto border border-cyan-500/40">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 via-emerald-500 to-amber-400 flex items-center justify-center text-2xl font-black text-obsidian-950 shadow-lg">
+                                    $
+                                </div>
+                                <div>
+                                    <div class="text-[10px] uppercase font-black text-cyan-400 tracking-wider font-mono-num">Portfolio Balance</div>
+                                    <div class="text-3xl font-black text-white font-mono-num leading-tight cyan-glow">
+                                        ${{ (currentUser.dollars || 0).toLocaleString() }} <span class="text-xs font-bold text-cyan-400 font-sans">$QD</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Action Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                        <div class="glass-panel p-5 rounded-2xl space-y-3 cursor-pointer hover:border-emerald-500/40 transition" @click="currentUserTab = 'deposit'">
+                            <div class="flex justify-between items-center text-emerald-400">
+                                <i class="fas fa-qrcode text-xl"></i>
+                                <span class="text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded-full font-bold font-mono-num">Solana SPL</span>
+                            </div>
+                            <div>
+                                <div class="text-xs text-slate-400">Solana USDT Deposit Desk</div>
+                                <div class="text-base font-bold text-white mt-1">6% Statutory Fee Engine</div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-5 rounded-2xl space-y-3 cursor-pointer hover:border-amber-500/40 transition" @click="currentUserTab = 'ai'">
+                            <div class="flex justify-between items-center text-amber-400">
+                                <i class="fas fa-microchip text-xl"></i>
+                                <span class="text-[10px] bg-amber-500/10 px-2 py-0.5 rounded-full font-bold font-mono-num">AI Engine</span>
+                            </div>
+                            <div>
+                                <div class="text-xs text-slate-400">Active Yield Strategy</div>
+                                <div class="text-base font-bold text-white mt-1 uppercase font-mono-num">{{ activeAiType ? activeAiType : 'OFFLINE' }}</div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-5 rounded-2xl space-y-3 cursor-pointer hover:border-cyan-500/40 transition" @click="currentUserTab = 'bank'">
+                            <div class="flex justify-between items-center text-cyan-400">
+                                <i class="fas fa-building-columns text-xl"></i>
+                                <span class="text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded-full font-bold font-mono-num">Wire Payout</span>
+                            </div>
+                            <div>
+                                <div class="text-xs text-slate-400">Bank Wire Payout Desk</div>
+                                <div class="text-base font-bold text-white mt-1">Withdraw Funds</div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-5 rounded-2xl space-y-3 cursor-pointer hover:border-cyan-500/40 transition" @click="currentUserTab = 'charts'">
+                            <div class="flex justify-between items-center text-cyan-400">
+                                <i class="fas fa-chart-line text-xl"></i>
+                                <span class="text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded-full font-bold font-mono-num">Live Charts</span>
+                            </div>
+                            <div>
+                                <div class="text-xs text-slate-400">TradingView Multi-Asset</div>
+                                <div class="text-base font-bold text-white mt-1">Crypto, Forex, Gold</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: SOLANA DEPOSIT DESK & DEDICATED DEPOSIT HISTORY -->
+                <div v-if="currentUserTab === 'deposit'" class="space-y-6">
+                    <div class="glass-panel-emerald p-6 sm:p-8 rounded-3xl space-y-6">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400 font-mono-num">Solana Network Deposit Desk</span>
+                            <h2 class="text-2xl font-black text-white font-cinzel-title mt-1">Deposit USDT via Solana (SPL)</h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="glass-panel p-6 rounded-2xl text-center space-y-4">
+                                <span class="text-xs font-bold text-slate-300 block font-mono-num">Solana Deposit Address</span>
+                                <div class="p-3 bg-obsidian-950 rounded-xl border border-slate-800 text-xs font-mono-num text-cyan-300 break-all">
+                                    {{ solanaWalletAddress }}
+                                </div>
+                                <button @click="copySolanaAddress" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-xs text-emerald-400 font-bold font-mono-num rounded-xl border border-emerald-500/30">
+                                    <i class="fas fa-copy mr-1"></i> Copy Address
+                                </button>
+                            </div>
+
+                            <div class="glass-panel p-6 rounded-2xl space-y-4 font-mono-num">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1">Deposit Amount (USDT)</label>
+                                    <input v-model.number="depositForm.amount" type="number" placeholder="250" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs text-emerald-300 font-bold">
+                                </div>
+
+                                <div class="p-4 rounded-xl bg-obsidian-950 border border-slate-800 space-y-1.5 text-xs">
+                                    <div class="flex justify-between text-slate-400"><span>3% GST:</span><strong class="text-white">${{ (depositForm.amount * 0.03).toFixed(2) }}</strong></div>
+                                    <div class="flex justify-between text-slate-400"><span>2% Service:</span><strong class="text-white">${{ (depositForm.amount * 0.02).toFixed(2) }}</strong></div>
+                                    <div class="flex justify-between text-slate-400"><span>1% TDS:</span><strong class="text-white">${{ (depositForm.amount * 0.01).toFixed(2) }}</strong></div>
+                                    <div class="flex justify-between text-emerald-400 font-bold pt-1 border-t border-slate-800">
+                                        <span>Net Credited to Wallet:</span>
+                                        <span>${{ Math.max(0, depositForm.amount - (depositForm.amount * 0.06)).toFixed(2) }} $QD</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1">Payment Screenshot Proof</label>
+                                    <input type="file" accept="image/*" @change="handleDepositScreenshot" class="text-xs text-slate-400">
+                                </div>
+
+                                <button @click="submitDeposit" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 text-obsidian-950 font-black text-xs rounded-xl shadow">
+                                    SUBMIT DEPOSIT FOR VERIFICATION
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DEDICATED DEPOSIT HISTORY TABLE -->
+                    <div class="glass-panel p-6 rounded-3xl space-y-4 font-mono-num">
+                        <h3 class="font-bold text-sm text-slate-200">Solana USDT Deposit History</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-slate-800 text-[10px] uppercase">
+                                        <th class="py-3 px-3">Timestamp</th>
+                                        <th class="py-3 px-3">Gross USDT</th>
+                                        <th class="py-3 px-3">Stat 6% Fee</th>
+                                        <th class="py-3 px-3">Net $QD Credited</th>
+                                        <th class="py-3 px-3 text-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/60">
+                                    <tr v-for="d in userDeposits" :key="d.id" class="hover:bg-slate-900/40">
+                                        <td class="py-3.5 px-3 text-slate-400">{{ d.timestamp || 'Today' }}</td>
+                                        <td class="py-3.5 px-3 font-bold text-white">${{ d.amount }}</td>
+                                        <td class="py-3.5 px-3 text-rose-400">-${{ d.fee }}</td>
+                                        <td class="py-3.5 px-3 font-bold text-emerald-400">${{ d.netAmount }} $QD</td>
+                                        <td class="py-3.5 px-3 text-right">
+                                            <span :class="['px-2 py-0.5 rounded text-[9px] uppercase font-bold border',
+                                                d.status === 'approved' ? 'bg-emerald-950 text-emerald-400 border-emerald-800' :
+                                                d.status === 'rejected' ? 'bg-rose-950 text-rose-400 border-rose-800' :
+                                                'bg-amber-950 text-amber-400 border-amber-800']">
+                                                {{ d.status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="userDeposits.length === 0">
+                                        <td colspan="5" class="py-6 text-center text-slate-500">No deposit records found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: QUANTUS AI ENGINES DESK -->
+                <div v-if="currentUserTab === 'ai'" class="space-y-6 font-mono-num">
+                    <div class="glass-panel p-6 sm:p-8 rounded-3xl space-y-2">
+                        <h2 class="text-2xl font-black text-white font-cinzel-title">Quantus AI Automated Yield Engines</h2>
+                        <p class="text-xs text-slate-400">Single active AI strategy constraint enforced. VIP Neural Engine requires Admin VIP Approval.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- STANDARD ENGINE -->
+                        <div class="glass-panel p-6 rounded-3xl space-y-4 border"
+                             :class="activeAiType === 'standard' ? 'border-emerald-400/80 bg-emerald-950/20' : 'border-slate-800'">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-lg font-bold text-white font-cinzel-title">Standard AI Engine</h3>
+                                <span class="text-xs text-emerald-400 font-bold">25-30% Target Monthly</span>
+                            </div>
+                            <p class="text-xs text-slate-400">Standard quantitative yield algorithm across major liquid pairs.</p>
+                            <button @click="toggleAi('standard')" class="w-full py-2.5 rounded-xl text-xs font-bold transition"
+                                    :class="activeAiType === 'standard' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'">
+                                {{ activeAiType === 'standard' ? 'Deactivate Standard AI' : 'Activate Standard AI' }}
+                            </button>
+                        </div>
+
+                        <!-- VIP NEURAL ENGINE -->
+                        <div class="glass-panel p-6 rounded-3xl space-y-4 border"
+                             :class="activeAiType === 'vip' ? 'border-amber-400/80 bg-amber-950/20' : 'border-slate-800'">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-lg font-bold text-white font-cinzel-title">VIP Neural Engine</h3>
+                                <span class="text-xs text-amber-400 font-bold">35-40% Target Monthly</span>
+                            </div>
+                            <p class="text-xs text-slate-400">High-frequency predictive neural execution. Requires Admin VIP approval.</p>
+                            <div v-if="currentUser.isVip">
+                                <button @click="toggleAi('vip')" class="w-full py-2.5 rounded-xl text-xs font-bold transition"
+                                        :class="activeAiType === 'vip' ? 'bg-rose-600 text-white' : 'bg-amber-500 text-obsidian-950'">
+                                    {{ activeAiType === 'vip' ? 'Deactivate VIP AI' : 'Activate VIP Neural AI' }}
+                                </button>
+                            </div>
+                            <div v-else>
+                                <button @click="requestVipAccess" class="w-full py-2.5 bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold text-xs rounded-xl hover:bg-amber-500 hover:text-obsidian-950">
+                                    Request VIP Access
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: BANK WIRE & DEDICATED WITHDRAWAL HISTORY -->
+                <div v-if="currentUserTab === 'bank'" class="space-y-6 font-mono-num">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- BANK CREDENTIALS FORM -->
+                        <div class="glass-panel p-6 rounded-3xl space-y-4">
+                            <h3 class="text-lg font-bold text-white font-cinzel-title">Bank Wire Details</h3>
+                            <div class="space-y-3 text-xs">
+                                <div>
+                                    <label class="block text-slate-400 mb-1">Account Holder Name</label>
+                                    <input v-model="bankForm.holderName" type="text" placeholder="Alexander Wright" class="w-full glass-input rounded-xl px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-400 mb-1">Bank Name</label>
+                                    <input v-model="bankForm.bankName" type="text" placeholder="JPMorgan Chase Bank" class="w-full glass-input rounded-xl px-3 py-2">
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-slate-400 mb-1">Account Number</label>
+                                        <input v-model="bankForm.accountNumber" type="text" placeholder="9876543210" class="w-full glass-input rounded-xl px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-slate-400 mb-1">IFSC / SWIFT</label>
+                                        <input v-model="bankForm.ifsc" type="text" placeholder="CHASUS33" class="w-full glass-input rounded-xl px-3 py-2 uppercase">
+                                    </div>
+                                </div>
+                                <button @click="saveBankDetails" class="w-full py-2.5 bg-cyan-600 text-white font-bold text-xs rounded-xl shadow">
+                                    Save Bank Credentials
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- WITHDRAWAL ORDER FORM -->
+                        <div class="glass-panel p-6 rounded-3xl space-y-4">
+                            <h3 class="text-lg font-bold text-white font-cinzel-title">Execute Wire Withdrawal</h3>
+                            <div class="space-y-3 text-xs">
+                                <div>
+                                    <label class="block text-slate-400 mb-1">Withdrawal Amount ($QD)</label>
+                                    <input v-model.number="withdrawForm.amount" type="number" placeholder="250" class="w-full glass-input rounded-xl px-3 py-2 font-bold text-cyan-300">
+                                </div>
+                                <div class="p-3 bg-obsidian-950 rounded-xl border border-slate-800 space-y-1 text-slate-400">
+                                    <div class="flex justify-between"><span>6% Fee Deducted:</span><strong class="text-rose-400">-${{ (withdrawForm.amount * 0.06).toFixed(2) }} $QD</strong></div>
+                                    <div class="flex justify-between text-emerald-400 font-bold"><span>Net Wire Received:</span><span>${{ Math.max(0, withdrawForm.amount - (withdrawForm.amount * 0.06)).toFixed(2) }}</span></div>
+                                </div>
+                                <div>
+                                    <label class="block text-slate-400 mb-1">Account Password Confirmation</label>
+                                    <input v-model="withdrawForm.password" type="password" placeholder="••••••••" class="w-full glass-input rounded-xl px-3 py-2">
+                                </div>
+                                <button @click="submitWithdrawal" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 text-obsidian-950 font-black text-xs rounded-xl shadow">
+                                    TRANSMIT WITHDRAWAL ORDER
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DEDICATED WITHDRAWAL HISTORY TABLE -->
+                    <div class="glass-panel p-6 rounded-3xl space-y-4">
+                        <h3 class="font-bold text-sm text-slate-200">Bank Wire Withdrawal History</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-slate-800 text-[10px] uppercase">
+                                        <th class="py-3 px-3">Timestamp</th>
+                                        <th class="py-3 px-3">Gross Requested</th>
+                                        <th class="py-3 px-3">6% Fee</th>
+                                        <th class="py-3 px-3">Net Wire Amount</th>
+                                        <th class="py-3 px-3 text-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/60">
+                                    <tr v-for="w in userWithdrawals" :key="w.id" class="hover:bg-slate-900/40">
+                                        <td class="py-3.5 px-3 text-slate-400">{{ w.timestamp || 'Today' }}</td>
+                                        <td class="py-3.5 px-3 font-bold text-white">${{ w.amount }}</td>
+                                        <td class="py-3.5 px-3 text-rose-400">-${{ w.fee }}</td>
+                                        <td class="py-3.5 px-3 font-bold text-emerald-400">${{ w.netAmount }}</td>
+                                        <td class="py-3.5 px-3 text-right">
+                                            <span :class="['px-2 py-0.5 rounded text-[9px] uppercase font-bold border',
+                                                w.status === 'approved' ? 'bg-emerald-950 text-emerald-400 border-emerald-800' :
+                                                w.status === 'rejected' ? 'bg-rose-950 text-rose-400 border-rose-800' :
+                                                'bg-amber-950 text-amber-400 border-amber-800']">
+                                                {{ w.status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="userWithdrawals.length === 0">
+                                        <td colspan="5" class="py-6 text-center text-slate-500">No withdrawal records found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: WALLET & DAILY EARN/LOSS PNL LEDGER -->
+                <div v-if="currentUserTab === 'wallet'" class="space-y-6 font-mono-num">
+                    <div class="glass-panel p-6 sm:p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div>
+                            <span class="text-[10px] font-black uppercase text-cyan-400">Quantus Wallet Ledger</span>
+                            <h2 class="text-2xl font-black text-white font-cinzel-title">Quantus Dollars ($QD) Portfolio</h2>
+                        </div>
+                        <div class="glass-panel-cyan px-8 py-4 rounded-3xl text-center">
+                            <div class="text-[10px] uppercase font-black text-cyan-300">Available Portfolio Balance</div>
+                            <div class="text-3xl font-black text-white cyan-glow">${{ (currentUser.dollars || 0).toLocaleString() }} $QD</div>
+                        </div>
+                    </div>
+
+                    <!-- DEDICATED DAILY EARN/LOSS PNL HISTORY TABLE -->
+                    <div class="glass-panel p-6 rounded-3xl space-y-4">
+                        <h3 class="font-bold text-sm text-slate-200">Daily Trade Executions & PnL History</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-slate-800 text-[10px] uppercase">
+                                        <th class="py-3 px-3">Date</th>
+                                        <th class="py-3 px-3">Execution Type</th>
+                                        <th class="py-3 px-3">Asset / Pair</th>
+                                        <th class="py-3 px-3 text-right">PnL Amount ($QD)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/60">
+                                    <tr v-for="t in userTransactions" :key="t.id" class="hover:bg-slate-900/40">
+                                        <td class="py-3.5 px-3 text-slate-400">{{ t.date || 'Today' }}</td>
+                                        <td class="py-3.5 px-3 font-bold text-slate-200">{{ t.reason }}</td>
+                                        <td class="py-3.5 px-3">
+                                            <span v-if="t.tradeAsset" class="px-2 py-0.5 rounded text-[9px] font-bold border"
+                                                  :class="t.orderType === 'BUY' ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 'bg-rose-950 text-rose-400 border-rose-800'">
+                                                {{ t.tradeAsset }} • {{ t.orderType }}
+                                            </span>
+                                            <span v-else class="text-slate-500 text-[10px]">GENERAL</span>
+                                        </td>
+                                        <td class="py-3.5 px-3 text-right font-black text-sm"
+                                            :class="t.amount >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+                                            {{ t.amount >= 0 ? '+' : '' }}${{ t.amount }} $QD
+                                        </td>
+                                    </tr>
+                                    <tr v-if="userTransactions.length === 0">
+                                        <td colspan="4" class="py-6 text-center text-slate-500">No trade logs executed yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 6: CHARTS -->
+                <div v-if="currentUserTab === 'charts'" class="glass-panel p-4 sm:p-6 rounded-3xl space-y-4">
+                    <h2 class="text-xl font-black text-white font-cinzel-title">TradingView Live Multi-Asset Desk</h2>
+                    <div class="w-full h-[500px] rounded-2xl overflow-hidden border border-slate-800 bg-obsidian-950">
+                        <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_widget&symbol=BINANCE%3ABTCUSDT&interval=D&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=0A0F1D&theme=dark&style=1&timezone=Etc%2FUTC" 
+                                class="w-full h-full border-0"></iframe>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- MASTER ADMIN CONSOLE DESK VIEWS -->
+            <div v-if="isAdminLoggedIn" class="space-y-6 font-mono-num">
+                
+                <!-- TAB 1: KYC APPROVALS DESK WITH LIGHTBOX PREVIEW -->
+                <div v-if="adminTab === 'kyc'" class="glass-panel p-6 rounded-3xl space-y-4 border border-rose-500/30">
+                    <h2 class="text-lg font-black text-white font-cinzel-title">Pending KYC Verification Requests ({{ pendingKycUsers.length }})</h2>
+
+                    <div v-if="pendingKycUsers.length === 0" class="py-8 text-center text-slate-500">No pending KYC applications.</div>
+                    <div v-else class="space-y-4">
+                        <div v-for="u in pendingKycUsers" :key="u.id" class="p-4 bg-obsidian-950 border border-slate-800 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="space-y-1">
+                                <div class="font-bold text-white text-base font-sans">{{ u.name }}</div>
+                                <div class="text-xs text-slate-400">{{ u.email }} | {{ u.phone }}</div>
+                                <div class="text-[10px] text-emerald-400">18+ Age Verified</div>
+                                
+                                <div class="pt-2 flex gap-2">
+                                    <div v-for="(img, idx) in u.proofs" :key="idx" 
+                                         @click="modalImageSrc = img" 
+                                         class="w-14 h-14 rounded-lg overflow-hidden border border-slate-700 cursor-pointer hover:border-cyan-400 transition">
+                                        <img :src="img" class="w-full h-full object-cover">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button @click="updateUserStatus(u.id, 'approved')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl">
+                                    Approve Account
+                                </button>
+                                <button @click="updateUserStatus(u.id, 'rejected')" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl">
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: SOLANA DEPOSIT APPROVALS DESK -->
+                <div v-if="adminTab === 'deposits'" class="glass-panel p-6 rounded-3xl space-y-4 border border-emerald-500/30">
+                    <h2 class="text-lg font-black text-white font-cinzel-title">Solana USDT Deposit Approvals ({{ pendingDeposits.length }})</h2>
+
+                    <div v-if="pendingDeposits.length === 0" class="py-8 text-center text-slate-500">No deposit verification requests pending.</div>
+                    <div v-else class="space-y-4">
+                        <div v-for="d in pendingDeposits" :key="d.id" class="p-4 bg-obsidian-950 border border-slate-800 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="space-y-1">
+                                <div class="font-bold text-white text-sm font-sans">{{ getUserName(d.userId) }}</div>
+                                <div class="text-xs text-slate-300">
+                                    Gross USDT: ${{ d.amount }} | 6% Stat Fee: -${{ d.fee }} | Net Credited: <strong class="text-emerald-400">${{ d.netAmount }} $QD</strong>
+                                </div>
+                                <div v-if="d.screenshot" @click="modalImageSrc = d.screenshot" class="w-16 h-16 rounded-lg border border-slate-700 overflow-hidden cursor-pointer mt-1">
+                                    <img :src="d.screenshot" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button @click="approveDeposit(d.id)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl">
+                                    Approve & Credit Net ${{ d.netAmount }} $QD
+                                </button>
+                                <button @click="rejectDeposit(d.id)" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl">
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: WITHDRAWAL APPROVALS DESK & HISTORY LOG EDITOR -->
+                <div v-if="adminTab === 'withdrawals'" class="glass-panel p-6 rounded-3xl space-y-4 border border-cyan-500/30">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-black text-white font-cinzel-title">Withdrawal Requests & History Log Editor</h2>
+                    </div>
+
+                    <div v-if="withdrawals.length === 0" class="py-8 text-center text-slate-500">No withdrawal logs recorded.</div>
+                    <div v-else class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="text-slate-400 border-b border-slate-800 text-[10px] uppercase">
+                                    <th class="py-3 px-3">User</th>
+                                    <th class="py-3 px-3">Timestamp / Date</th>
+                                    <th class="py-3 px-3">Gross Requested</th>
+                                    <th class="py-3 px-3">6% Fee</th>
+                                    <th class="py-3 px-3">Net Wire Amount</th>
+                                    <th class="py-3 px-3">Status</th>
+                                    <th class="py-3 px-3 text-right">Admin Control</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60">
+                                <tr v-for="w in withdrawals" :key="w.id" class="hover:bg-slate-900/40">
+                                    <td class="py-3 px-3 font-bold text-white">{{ getUserName(w.userId) }}</td>
+                                    <td class="py-3 px-3 text-slate-400">{{ w.timestamp }}</td>
+                                    <td class="py-3 px-3 text-cyan-300 font-bold">${{ w.amount }}</td>
+                                    <td class="py-3 px-3 text-rose-400">-${{ w.fee }}</td>
+                                    <td class="py-3 px-3 text-emerald-400 font-bold">${{ w.netAmount }}</td>
+                                    <td class="py-3 px-3">
+                                        <span :class="['px-2 py-0.5 rounded text-[9px] uppercase font-bold border',
+                                            w.status === 'approved' ? 'bg-emerald-950 text-emerald-400 border-emerald-800' :
+                                            w.status === 'rejected' ? 'bg-rose-950 text-rose-400 border-rose-800' :
+                                            'bg-amber-950 text-amber-400 border-amber-800']">
+                                            {{ w.status }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-3 text-right space-x-1.5 font-sans">
+                                        <button v-if="w.status === 'pending'" @click="approveWithdrawal(w.id)" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-xs font-semibold">
+                                            Approve
+                                        </button>
+                                        <button v-if="w.status === 'pending'" @click="rejectWithdrawal(w.id)" class="px-2.5 py-1 rounded-lg bg-rose-600 text-white text-xs font-semibold">
+                                            Reject
+                                        </button>
+                                        <button @click="openWithdrawalEditModal(w)" class="px-2.5 py-1 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold">
+                                            <i class="fas fa-pen-to-square mr-1"></i> Edit Log
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 4: TRADE & CATEGORY-WISE YIELD ENGINE DESK -->
+                <div v-if="adminTab === 'trade_pnl'" class="glass-panel p-6 rounded-3xl space-y-6 border border-amber-500/30">
+                    <div>
+                        <h2 class="text-lg font-black text-white font-cinzel-title">Quantitative Trade & Category-Wise Yield Engine</h2>
+                        <p class="text-xs text-slate-400 mt-1">Inject custom PnL trade logs for specific accounts or apply yield globally / by AI category.</p>
+                    </div>
+
+                    <!-- AI CATEGORY YIELD CONTROLLER -->
+                    <div class="p-4 bg-obsidian-950 border border-slate-800 rounded-2xl space-y-3">
+                        <h3 class="font-bold text-xs text-amber-400 uppercase">Apply AI Category-Wise Yield %</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-[10px] text-slate-400">Yield Percentage %</label>
+                                <input v-model.number="yieldForm.percent" type="number" step="0.5" placeholder="2.5" class="w-full glass-input rounded-xl px-3 py-2 text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400">Target Category</label>
+                                <select v-model="yieldForm.category" class="w-full glass-input rounded-xl px-3 py-2 text-xs bg-slate-950">
+                                    <option value="all">Global (All Users)</option>
+                                    <option value="standard">Standard AI Category</option>
+                                    <option value="vip">VIP Neural AI Category</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button @click="applyCategoryYield" class="w-full py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-obsidian-950 font-black text-xs rounded-xl shadow">
+                                    Apply Category Yield
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MANUAL TRADE PNL INJECTION TABLE -->
+                    <div class="space-y-3">
+                        <h3 class="font-bold text-xs text-slate-300">Inject Custom Trade PnL Log Per User</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-slate-800 text-[10px] uppercase">
+                                        <th class="py-3 px-3">User</th>
+                                        <th class="py-3 px-3">Active AI</th>
+                                        <th class="py-3 px-3">Balance ($QD)</th>
+                                        <th class="py-3 px-3 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/60">
+                                    <tr v-for="u in approvedUsers" :key="u.id" class="hover:bg-slate-900/40">
+                                        <td class="py-3.5 px-3 font-bold text-white font-sans">{{ u.name }}</td>
+                                        <td class="py-3.5 px-3 text-emerald-400 uppercase font-bold">{{ u.activeAi || 'OFFLINE' }}</td>
+                                        <td class="py-3.5 px-3 font-bold text-cyan-400">${{ u.dollars || 0 }} $QD</td>
+                                        <td class="py-3.5 px-3 text-right">
+                                            <button @click="openTradeModal(u)" class="px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-lg">
+                                                + Inject Trade PnL Log
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: USERS CONTROL TABLE -->
+                <div v-if="adminTab === 'users'" class="glass-panel p-6 rounded-3xl space-y-4 border border-purple-500/30">
+                    <h3 class="font-bold text-sm text-slate-300">Registered Accounts Queue ({{ users.length }})</h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="text-slate-400 border-b border-slate-800 text-[10px] uppercase">
+                                    <th class="py-3 px-3">User Info</th>
+                                    <th class="py-3 px-3">Contact Email</th>
+                                    <th class="py-3 px-3">Balance ($QD)</th>
+                                    <th class="py-3 px-3">Status</th>
+                                    <th class="py-3 px-3 text-right">Admin Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60">
+                                <tr v-for="u in users" :key="u.id" class="hover:bg-slate-900/40">
+                                    <td class="py-3.5 px-3">
+                                        <div class="font-bold text-white font-sans text-sm">{{ u.name }}</div>
+                                        <div class="text-[10px] text-slate-500">{{ u.id }}</div>
+                                    </td>
+                                    <td class="py-3.5 px-3">
+                                        <div class="text-slate-300">{{ u.email }}</div>
+                                        <div class="text-slate-500">{{ u.phone }}</div>
+                                    </td>
+                                    <td class="py-3.5 px-3 font-bold text-cyan-400">${{ u.dollars || 0 }}</td>
+                                    <td class="py-3.5 px-3">
+                                        <span :class="['px-2 py-0.5 rounded text-[9px] uppercase font-bold border', 
+                                            u.status === 'approved' ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 
+                                            u.status === 'rejected' ? 'bg-rose-950 text-rose-400 border-rose-800' : 
+                                            'bg-amber-950 text-amber-400 border-amber-800']">
+                                            {{ u.status }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 px-3 text-right space-x-1.5 font-sans">
+                                        <button @click="openEditModal(u)" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">
+                                            Edit
+                                        </button>
+                                        <button @click="deleteUser(u.id)" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- MASTER ADMIN AUTH MODAL -->
+        <div v-if="showAdminAuthModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+            <div class="glass-panel p-6 rounded-3xl max-w-sm w-full space-y-4 border border-rose-500/40 font-mono-num">
+                <h3 class="font-bold text-lg text-rose-400 font-cinzel-title text-center">Master Admin Authorization</h3>
+                <form @submit.prevent="verifyAdminLogin" class="space-y-3">
+                    <div>
+                        <label class="text-xs text-slate-400">Admin Email</label>
+                        <input v-model="adminAuth.email" type="email" required class="w-full glass-input rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400">Master Password</label>
+                        <input v-model="adminAuth.password" type="password" required class="w-full glass-input rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button type="button" @click="showAdminAuthModal = false" class="flex-1 py-2 rounded-xl bg-slate-800 text-xs text-slate-300 font-semibold">Cancel</button>
+                        <button type="submit" class="flex-1 py-2 rounded-xl bg-rose-600 text-xs text-white font-semibold">Authorize</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- EDIT USER MODAL -->
+        <div v-if="editingUser" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 font-mono-num">
+            <div class="glass-panel p-6 rounded-3xl max-w-md w-full space-y-4 border border-cyan-500/40">
+                <h3 class="font-bold text-lg text-cyan-400 font-cinzel-title">Edit User Record</h3>
+                <form @submit.prevent="saveUserEdit" class="space-y-3">
+                    <div>
+                        <label class="text-xs text-slate-400">Full Name</label>
+                        <input v-model="editingUser.name" type="text" required class="w-full glass-input rounded-xl px-3 py-2 text-xs font-sans">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400">Email Address</label>
+                        <input v-model="editingUser.email" type="email" required class="w-full glass-input rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400">Phone Number</label>
+                        <input v-model="editingUser.phone" type="text" class="w-full glass-input rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400">Portfolio Balance ($QD)</label>
+                        <input v-model.number="editingUser.dollars" type="number" step="any" class="w-full glass-input rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400">Status</label>
+                        <select v-model="editingUser.status" class="w-full glass-input rounded-xl px-3 py-2 text-xs bg-slate-950">
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button type="button" @click="editingUser = null" class="flex-1 py-2 rounded-xl bg-slate-800 text-xs text-slate-300 font-semibold">Cancel</button>
+                        <button type="submit" class="flex-1 py-2 rounded-xl bg-cyan-600 text-xs text-white font-semibold">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- EDIT WITHDRAWAL LOG MODAL -->
+        <div v-if="editingWithdrawal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 font-mono-num">
+            <div class="glass-panel p-6 rounded-3xl max-w-md w-full space-y-4 border border-cyan-500/40">
+                <h3 class="font-bold text-lg text-cyan-400 font-cinzel-title">Edit Withdrawal History Log</h3>
+                <form @submit.prevent="saveWithdrawalEdit" class="space-y-3">
+                    <div>
+                        <label class="text-xs text-slate-400">Withdrawal Amount ($QD)</label>
+                        <input v-model.number="editingWithdrawal.amount" type="number" step="any" required class="w-full glass-input rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400">Date & Timestamp</label>
+                        <input v-model="editingWithdrawal.timestamp" type="text" required class="w-full glass-input rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400">Status</label>
+                        <select v-model="editingWithdrawal.status" class="w-full glass-input rounded-xl px-3 py-2 text-xs bg-slate-950">
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button type="button" @click="editingWithdrawal = null" class="flex-1 py-2 rounded-xl bg-slate-800 text-xs text-slate-300 font-semibold">Cancel</button>
+                        <button type="submit" class="flex-1 py-2 rounded-xl bg-cyan-600 text-xs text-white font-semibold">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- LIGHTBOX PREVIEW MODAL -->
+        <div v-if="modalImageSrc" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4" @click="modalImageSrc = null">
+            <div class="relative max-w-3xl w-full bg-obsidian-900 border border-slate-800 rounded-3xl overflow-hidden p-3 text-center" @click.stop>
+                <img :src="modalImageSrc" class="w-full max-h-[80vh] object-contain rounded-2xl">
+                <button @click="modalImageSrc = null" class="absolute top-5 right-5 bg-obsidian-950/80 text-white w-9 h-9 rounded-full flex items-center justify-center border border-slate-700">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- TRADE PNL INJECTION MODAL -->
+        <div v-if="tradeModalUser" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 font-mono-num">
+            <div class="glass-panel p-6 rounded-3xl max-w-md w-full space-y-4 border border-amber-500/40">
+                <h3 class="font-bold text-base text-white font-cinzel-title">Inject Trade Log: {{ tradeModalUser.name }}</h3>
+                
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block text-slate-300 mb-1">Asset Pair</label>
+                        <select v-model="tradeForm.asset" class="w-full glass-input rounded-xl px-3 py-2 bg-slate-950">
+                            <option value="XAU/USD">🪙 XAU/USD (Gold)</option>
+                            <option value="EUR/USD">💱 EUR/USD</option>
+                            <option value="SOL/USDT">⚡ SOL/USDT</option>
+                            <option value="BTC/USDT">₿ BTC/USDT</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 mb-1">Order Type</label>
+                        <select v-model="tradeForm.orderType" class="w-full glass-input rounded-xl px-3 py-2 bg-slate-950">
+                            <option value="BUY">🟢 BUY (LONG)</option>
+                            <option value="SELL">🔴 SELL (SHORT)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">PnL Amount ($QD)</label>
+                    <input v-model.number="tradeForm.amount" type="number" placeholder="e.g. 150 or -50" class="w-full glass-input rounded-xl px-3 py-2 text-xs font-bold text-cyan-300">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Description</label>
+                    <input v-model="tradeForm.reason" type="text" placeholder="Neural Quantitative Arbitrage" class="w-full glass-input rounded-xl px-3 py-2 text-xs">
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button @click="confirmTradeInjection" class="flex-1 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 text-obsidian-950 font-black text-xs rounded-xl">
+                        Inject Trade PnL
+                    </button>
+                    <button @click="tradeModalUser = null" class="px-4 py-2.5 bg-slate-800 text-slate-300 font-bold text-xs rounded-xl">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- APPLICATION LOGIC -->
+    <script>
+        const { createApp, ref, reactive, computed, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const SUPABASE_URL = "https://qxmbpojsvqokcuggiksl.supabase.co";
+                const SUPABASE_KEY = "sb_publishable_-4-PLUprGtJHvqra_DO_ow_Ejf723lZ";
+                
+                let supabaseClient = null;
+
+                const currentUser = ref(null);
+                const isAdminLoggedIn = ref(false);
+                const showAdminAuthModal = ref(false);
+                const drawerOpen = ref(false);
+                const currentUserTab = ref('dashboard');
+                const adminTab = ref('kyc');
+                const authTab = ref('login');
+                const modalImageSrc = ref(null);
+                const activeAiType = ref(null);
+
+                const users = ref([]);
+                const deposits = ref([]);
+                const withdrawals = ref([]);
+                const transactions = ref([]);
+                const editingUser = ref(null);
+                const editingWithdrawal = ref(null);
+                const tradeModalUser = ref(null);
+                const solanaWalletAddress = ref("GEDNYHQ7NtiGWuxweDLwd1XzBwyv1t7K1wUPPpa1JNKp");
+
+                const toast = reactive({ show: false, message: '', type: 'success' });
+                const loginForm = reactive({ email: '', password: '' });
+                const signupForm = reactive({ name: '', email: '', phone: '', password: '', proofs: [], is18OrAbove: false });
+                const depositForm = reactive({ amount: 100, screenshot: null });
+                const bankForm = reactive({ holderName: '', bankName: '', accountNumber: '', ifsc: '' });
+                const withdrawForm = reactive({ amount: 100, password: '' });
+                const adminAuth = reactive({ email: 'admin@quantusprime.io', password: '' });
+                const tradeForm = reactive({ amount: 150, asset: 'XAU/USD', orderType: 'BUY', reason: '' });
+                const yieldForm = reactive({ percent: 2.5, category: 'all' });
+
+                const triggerToast = (msg, type = 'success') => {
+                    toast.message = msg;
+                    toast.type = type;
+                    toast.show = true;
+                    setTimeout(() => { toast.show = false; }, 4000);
+                };
+
+                const initSupabase = async () => {
+                    try {
+                        if (window.supabase) {
+                            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                            await fetchUsers();
+                        }
+                    } catch (err) {
+                        console.error("Supabase Error:", err);
+                    }
+                };
+
+                const fetchUsers = async () => {
+                    if (!supabaseClient) return;
+                    const { data, error } = await supabaseClient.from('users').select('*');
+                    if (!error && data) {
+                        users.value = data;
+                    }
+                };
+
+                // COMPUTED DESK DATA
+                const pendingKycUsers = computed(() => users.value.filter(u => u.status === 'pending'));
+                const approvedUsers = computed(() => users.value.filter(u => u.status === 'approved'));
+                const pendingDeposits = computed(() => deposits.value.filter(d => d.status === 'pending'));
+                const pendingWithdrawals = computed(() => withdrawals.value.filter(w => w.status === 'pending'));
+
+                const userDeposits = computed(() => {
+                    if (!currentUser.value) return [];
+                    return deposits.value.filter(d => d.userId === currentUser.value.id);
+                });
+
+                const userWithdrawals = computed(() => {
+                    if (!currentUser.value) return [];
+                    return withdrawals.value.filter(w => w.userId === currentUser.value.id);
+                });
+
+                const userTransactions = computed(() => {
+                    if (!currentUser.value) return [];
+                    return transactions.value.filter(t => t.userId === currentUser.value.id);
+                });
+
+                const handleProofUpload = (e) => {
+                    const files = Array.from(e.target.files);
+                    if (signupForm.proofs.length + files.length > 3) {
+                        return triggerToast("Maximum 3 proof photos allowed", "error");
+                    }
+                    files.forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => { signupForm.proofs.push(event.target.result); };
+                        reader.readAsDataURL(file);
+                    });
+                };
+
+                const removeProof = (idx) => { signupForm.proofs.splice(idx, 1); };
+
+                const handleDepositScreenshot = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => { depositForm.screenshot = event.target.result; };
+                        reader.readAsDataURL(file);
+                    }
+                };
+
+                // Registration Payload Fix (Prevents Supabase schema cache column errors)
+                const handleSignup = async () => {
+                    if (!supabaseClient) return triggerToast("Database connection missing", "error");
+                    if (signupForm.proofs.length < 2) return triggerToast("Please upload at least 2 proof photos", "error");
+
+                    const cleanEmail = signupForm.email.trim().toLowerCase();
+
+                    const { data: existingRecords } = await supabaseClient
+                        .from('users')
+                        .select('*')
+                        .eq('email', cleanEmail);
+
+                    if (existingRecords && existingRecords.length > 0) {
+                        const existingUser = existingRecords[0];
+                        if (existingUser.status === 'rejected') {
+                            await supabaseClient.from('users').delete().eq('id', existingUser.id);
+                        } else {
+                            return triggerToast("This email is already registered.", "error");
+                        }
+                    }
+
+                    const newUserPayload = {
+                        id: 'USR-' + Math.floor(100000 + Math.random() * 900000),
+                        name: signupForm.name.trim(),
+                        email: cleanEmail,
+                        phone: signupForm.phone.trim(),
+                        password: signupForm.password,
+                        proofs: [...signupForm.proofs],
+                        status: 'pending',
+                        isVip: false,
+                        dollars: 0
+                    };
+
+                    const { error } = await supabaseClient.from('users').insert([newUserPayload]);
+                    if (error) {
+                        triggerToast("Registration failed: " + error.message, "error");
+                    } else {
+                        triggerToast("Application submitted for KYC verification!");
+                        signupForm.name = ''; signupForm.email = ''; signupForm.phone = ''; signupForm.password = ''; signupForm.proofs = [];
+                        await fetchUsers();
+                        authTab.value = 'login';
+                    }
+                };
+
+                const handleLogin = async () => {
+                    await fetchUsers();
+                    const cleanEmail = loginForm.email.trim().toLowerCase();
+                    const user = users.value.find(u => u.email.toLowerCase() === cleanEmail && u.password === loginForm.password);
+                    if (user) {
+                        currentUser.value = user;
+                        triggerToast("Welcome back, " + user.name);
+                    } else {
+                        triggerToast("Invalid credentials or account not found", "error");
+                    }
+                };
+
+                const verifyAdminLogin = () => {
+                    if (adminAuth.email.trim().toLowerCase() === 'admin@quantusprime.io' && adminAuth.password === 'admin123') {
+                        isAdminLoggedIn.value = true;
+                        showAdminAuthModal.value = false;
+                        adminAuth.password = '';
+                        triggerToast("Master Admin Authorized");
+                        fetchUsers();
+                    } else {
+                        triggerToast("Invalid Master Admin Credentials", "error");
+                    }
+                };
+
+                // Admin Action: Approve/Reject (ZERO AUTO BONUS)
+                const updateUserStatus = async (userId, newStatus) => {
+                    if (!supabaseClient) return;
+                    const { error } = await supabaseClient.from('users').update({ status: newStatus }).eq('id', userId);
+                    if (!error) {
+                        triggerToast(`Status updated to ${newStatus}`);
+                        await fetchUsers();
+                    } else {
+                        triggerToast("Status update failed", "error");
+                    }
+                };
+
+                const submitDeposit = () => {
+                    if (!depositForm.screenshot) return triggerToast("Please attach payment screenshot proof", "error");
+                    const amt = depositForm.amount || 0;
+                    const fee = Number((amt * 0.06).toFixed(2));
+                    const net = Number(Math.max(0, amt - fee).toFixed(2));
+
+                    deposits.value.unshift({
+                        id: 'dep_' + Date.now(),
+                        userId: currentUser.value.id,
+                        amount: amt,
+                        fee: fee,
+                        netAmount: net,
+                        screenshot: depositForm.screenshot,
+                        status: 'pending',
+                        timestamp: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    });
+                    depositForm.screenshot = null;
+                    triggerToast("Solana Deposit submitted for Admin verification!");
+                };
+
+                const approveDeposit = (depId) => {
+                    const dep = deposits.value.find(d => d.id === depId);
+                    if (dep) {
+                        dep.status = 'approved';
+                        const u = users.value.find(user => user.id === dep.userId);
+                        if (u) {
+                            u.dollars = (u.dollars || 0) + dep.netAmount;
+                            transactions.value.unshift({
+                                id: Date.now(),
+                                userId: u.id,
+                                amount: dep.netAmount,
+                                reason: `Solana USDT Deposit Credited (Net after 6% fee)`,
+                                date: 'Today'
+                            });
+                        }
+                        triggerToast(`Approved Deposit & Credited $${dep.netAmount} $QD!`);
+                    }
+                };
+
+                const rejectDeposit = (depId) => {
+                    const dep = deposits.value.find(d => d.id === depId);
+                    if (dep) { dep.status = 'rejected'; triggerToast("Deposit declined", "error"); }
+                };
+
+                const submitWithdrawal = () => {
+                    if (withdrawForm.amount <= 0 || withdrawForm.amount > currentUser.value.dollars) {
+                        return triggerToast("Invalid withdrawal amount", "error");
+                    }
+                    if (withdrawForm.password !== currentUser.value.password) {
+                        return triggerToast("Incorrect password confirmation!", "error");
+                    }
+
+                    const amt = withdrawForm.amount;
+                    const fee = Number((amt * 0.06).toFixed(2));
+                    const net = Number(Math.max(0, amt - fee).toFixed(2));
+
+                    withdrawals.value.unshift({
+                        id: 'wd_' + Date.now(),
+                        userId: currentUser.value.id,
+                        amount: amt,
+                        fee: fee,
+                        netAmount: net,
+                        status: 'pending',
+                        timestamp: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    });
+                    currentUser.value.dollars -= amt;
+                    withdrawForm.password = '';
+                    triggerToast("Withdrawal order transmitted to Admin!");
+                };
+
+                const approveWithdrawal = (wdId) => {
+                    const w = withdrawals.value.find(item => item.id === wdId);
+                    if (w) {
+                        w.status = 'approved';
+                        triggerToast("Withdrawal payout approved!");
+                    }
+                };
+
+                const rejectWithdrawal = (wdId) => {
+                    const w = withdrawals.value.find(item => item.id === wdId);
+                    if (w) {
+                        w.status = 'rejected';
+                        const u = users.value.find(user => user.id === w.userId);
+                        if (u) u.dollars += w.amount;
+                        triggerToast("Withdrawal declined & funds refunded", "error");
+                    }
+                };
+
+                // Admin Action: Direct Edit of Withdrawal History Log (Amount & Date)
+                const openWithdrawalEditModal = (w) => {
+                    editingWithdrawal.value = { ...w };
+                };
+
+                const saveWithdrawalEdit = () => {
+                    if (!editingWithdrawal.value) return;
+                    const w = withdrawals.value.find(item => item.id === editingWithdrawal.value.id);
+                    if (w) {
+                        w.amount = editingWithdrawal.value.amount;
+                        w.fee = Number((w.amount * 0.06).toFixed(2));
+                        w.netAmount = Number(Math.max(0, w.amount - w.fee).toFixed(2));
+                        w.timestamp = editingWithdrawal.value.timestamp;
+                        w.status = editingWithdrawal.value.status;
+                        triggerToast("Withdrawal History Record Updated!");
+                    }
+                    editingWithdrawal.value = null;
+                };
+
+                const toggleAi = (type) => {
+                    if (activeAiType.value === type) {
+                        activeAiType.value = null;
+                        triggerToast(`Deactivated ${type.toUpperCase()} Engine`);
+                    } else {
+                        activeAiType.value = type;
+                        triggerToast(`Activated ${type.toUpperCase()} Engine`);
+                    }
+                };
+
+                const requestVipAccess = () => {
+                    triggerToast("VIP Neural AI Request transmitted to Admin!");
+                };
+
+                const openTradeModal = (u) => { tradeModalUser.value = u; };
+
+                const confirmTradeInjection = () => {
+                    if (!tradeModalUser.value) return;
+                    const u = tradeModalUser.value;
+                    u.dollars = (u.dollars || 0) + tradeForm.amount;
+                    transactions.value.unshift({
+                        id: Date.now(),
+                        userId: u.id,
+                        amount: tradeForm.amount,
+                        reason: tradeForm.reason || 'Quantitative AI Trade Execution PnL',
+                        tradeAsset: tradeForm.asset,
+                        orderType: tradeForm.orderType,
+                        date: 'Today'
+                    });
+                    triggerToast(`Injected Trade PnL for ${u.name}!`);
+                    tradeModalUser.value = null;
+                };
+
+                const applyCategoryYield = () => {
+                    users.value.forEach(u => {
+                        if (u.status === 'approved' && u.dollars > 0) {
+                            const gain = Math.round(u.dollars * (yieldForm.percent / 100));
+                            u.dollars += gain;
+                            transactions.value.unshift({
+                                id: Date.now(),
+                                userId: u.id,
+                                amount: gain,
+                                reason: `AI Yield Distribution (+${yieldForm.percent}%)`,
+                                date: 'Today'
+                            });
+                        }
+                    });
+                    triggerToast(`Applied ${yieldForm.percent}% Yield for Category: ${yieldForm.category.toUpperCase()}`);
+                };
+
+                const openEditModal = (user) => { editingUser.value = { ...user }; };
+
+                const saveUserEdit = async () => {
+                    if (!supabaseClient || !editingUser.value) return;
+                    const { error } = await supabaseClient.from('users').update({
+                        name: editingUser.value.name,
+                        email: editingUser.value.email.toLowerCase(),
+                        phone: editingUser.value.phone,
+                        dollars: editingUser.value.dollars,
+                        status: editingUser.value.status
+                    }).eq('id', editingUser.value.id);
+
+                    if (!error) {
+                        triggerToast("User updated successfully!");
+                        editingUser.value = null;
+                        await fetchUsers();
+                    } else {
+                        triggerToast("Update failed: " + error.message, "error");
+                    }
+                };
+
+                const deleteUser = async (userId) => {
+                    if (!confirm("Permanently delete this user record?")) return;
+                    if (!supabaseClient) return;
+                    const { error } = await supabaseClient.from('users').delete().eq('id', userId);
+                    if (!error) {
+                        triggerToast("User permanently deleted!");
+                        await fetchUsers();
+                    } else {
+                        triggerToast("Delete failed", "error");
+                    }
+                };
+
+                const copySolanaAddress = () => {
+                    navigator.clipboard.writeText(solanaWalletAddress.value);
+                    triggerToast("Solana SPL Address copied to clipboard!");
+                };
+
+                const getUserName = (userId) => {
+                    const u = users.value.find(user => user.id === userId);
+                    return u ? u.name : 'Investor';
+                };
+
+                const saveBankDetails = () => { triggerToast("Bank credentials saved!"); };
+                const handleLogoClick = () => {
+                    if (currentUser.value && currentUser.value.status === 'approved') currentUserTab.value = 'dashboard';
+                };
+
+                const logout = () => {
+                    currentUser.value = null;
+                    isAdminLoggedIn.value = false;
+                    triggerToast("Logged out");
+                };
+
+                onMounted(() => {
+                    if (window.location.hash === '#admin') showAdminAuthModal.value = true;
+                    initSupabase();
+                });
+
+                return {
+                    currentUser, isAdminLoggedIn, showAdminAuthModal, drawerOpen, currentUserTab, adminTab, authTab,
+                    modalImageSrc, activeAiType, users, deposits, withdrawals, transactions, editingUser, editingWithdrawal,
+                    tradeModalUser, solanaWalletAddress, toast, loginForm, signupForm, depositForm, bankForm, withdrawForm,
+                    adminAuth, tradeForm, yieldForm, pendingKycUsers, approvedUsers, pendingDeposits, pendingWithdrawals,
+                    userDeposits, userWithdrawals, userTransactions, handleProofUpload, removeProof, handleDepositScreenshot,
+                    handleSignup, handleLogin, verifyAdminLogin, updateUserStatus, submitDeposit, approveDeposit,
+                    rejectDeposit, submitWithdrawal, approveWithdrawal, rejectWithdrawal, openWithdrawalEditModal,
+                    saveWithdrawalEdit, toggleAi, requestVipAccess, openTradeModal, confirmTradeInjection, applyCategoryYield,
+                    openEditModal, saveUserEdit, deleteUser, copySolanaAddress, getUserName, saveBankDetails, handleLogoClick, logout
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
